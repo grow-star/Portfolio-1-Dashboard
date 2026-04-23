@@ -1,0 +1,1994 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<title>P1 Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#060809;--s1:#0c1014;--s2:#111820;--border:#1a2535;
+  --text:#dde8f0;--muted:#4a6070;--dim:#1e2e3a;
+  --btc:#f7931a;--btc2:#ffb347;--green:#3dd68c;--red:#f06070;
+  --blue:#4a9eff;--purple:#9b7cff;--amber:#fbbf24;
+  --w1:#3dd68c;--w2:#9b7cff;--w3:#f7931a;--w4:#4a9eff;
+  --mono:'JetBrains Mono',monospace;--display:'Syne',sans-serif;--r:10px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--display);min-height:100vh;padding-bottom:60px;
+  background-image:radial-gradient(ellipse 80% 40% at 50% 0%,#0a1828 0%,transparent 60%);}
+.nav{background:var(--s1);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;
+  display:flex;overflow-x:auto;scrollbar-width:none;}
+.nav::-webkit-scrollbar{display:none;}
+.nav-tab{flex-shrink:0;padding:13px 12px;font-family:var(--mono);font-size:9px;letter-spacing:0.12em;
+  color:var(--muted);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+.nav-tab.active{color:var(--btc);border-bottom-color:var(--btc);}
+.page{display:none;padding:16px;}.page.active{display:block;}
+.ph{padding:16px 16px 4px;}
+.eyebrow{font-family:var(--mono);font-size:9px;color:var(--btc);letter-spacing:0.2em;margin-bottom:3px;}
+.page-title{font-size:20px;font-weight:800;letter-spacing:-0.02em;}
+.page-sub{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:3px;}
+.sec-label{font-family:var(--mono);font-size:9px;letter-spacing:0.18em;color:var(--muted);margin-bottom:8px;}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.stat-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:13px;}
+.stat-card.abtc{border-color:#f7931a33;background:linear-gradient(135deg,#0c1014,#1a1008);}
+.stat-card.agreen{border-color:#3dd68c33;background:linear-gradient(135deg,#0c1014,#081a10);}
+.stat-card.apurple{border-color:#9b7cff33;background:linear-gradient(135deg,#0c1014,#0f0818);}
+.stat-card.ared{border-color:#f0607033;background:linear-gradient(135deg,#0c1014,#180a0c);}
+.sl{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:0.1em;margin-bottom:5px;}
+.sv{font-size:21px;font-weight:700;letter-spacing:-0.02em;}
+.ss{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:2px;}
+.wcard{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:12px;}
+.fcard{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:12px;}
+.form-row{display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap;}
+.fg{flex:1;min-width:110px;display:flex;flex-direction:column;gap:5px;}
+label{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:0.1em;}
+input,select{background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:9px 11px;
+  color:var(--text);font-family:var(--mono);font-size:13px;width:100%;transition:border-color 0.2s;}
+input:focus,select:focus{outline:none;border-color:#f7931a44;}
+input::placeholder{color:var(--dim);}
+select option{background:var(--bg);}
+.tg{display:flex;background:var(--bg);border:1px solid var(--border);border-radius:7px;overflow:hidden;}
+.tb{flex:1;padding:9px 6px;font-family:var(--mono);font-size:10px;background:none;border:none;color:var(--muted);cursor:pointer;transition:all 0.15s;}
+.tb.active{background:var(--btc);color:#1a0a00;font-weight:500;}
+.tb.active.green{background:var(--green);color:#061208;}
+.tb.active.purple{background:var(--purple);color:#08041a;}
+.tb.active.blue{background:var(--blue);color:#040e1a;}
+.tb.active.red{background:var(--red);color:#1a0408;}
+.btn{width:100%;padding:12px;background:var(--btc);color:#1a0a00;border:none;border-radius:8px;
+  font-family:var(--mono);font-size:12px;font-weight:500;cursor:pointer;letter-spacing:0.08em;transition:all 0.15s;}
+.btn:hover{background:var(--btc2);}
+.btn-sm{padding:6px 12px;background:none;border:1px solid var(--border);border-radius:6px;
+  font-family:var(--mono);font-size:9px;color:var(--muted);cursor:pointer;transition:all 0.15s;}
+.btn-sm:hover{border-color:var(--btc);color:var(--btc);}
+.btn-danger{padding:6px 12px;background:none;border:1px solid var(--border);border-radius:6px;
+  font-family:var(--mono);font-size:9px;color:var(--muted);cursor:pointer;transition:all 0.15s;}
+.btn-danger:hover{border-color:var(--red);color:var(--red);}
+.err{color:var(--red);font-family:var(--mono);font-size:10px;margin-top:6px;min-height:14px;}
+.empty{text-align:center;padding:36px 16px;color:var(--dim);font-family:var(--mono);font-size:11px;line-height:1.9;}
+.log-row{background:var(--s2);border-radius:8px;padding:10px 12px;margin-bottom:8px;
+  display:flex;justify-content:space-between;align-items:center;}
+.chip{display:inline-block;font-family:var(--mono);font-size:8px;padding:2px 7px;border-radius:10px;letter-spacing:0.06em;}
+.rm{background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:0 4px;flex-shrink:0;}
+.track{background:var(--s2);border-radius:4px;height:8px;overflow:hidden;margin:4px 0;}
+.fill{height:100%;border-radius:4px;transition:width 0.5s ease;}
+.fund-row{display:flex;align-items:flex-start;gap:10px;padding:12px 0;border-bottom:1px solid var(--border);}
+.fund-row:last-child{border-bottom:none;}
+.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--s2);
+  border:1px solid var(--btc);border-radius:20px;padding:8px 18px;font-family:var(--mono);
+  font-size:10px;color:var(--btc);opacity:0;transition:opacity 0.3s;pointer-events:none;z-index:999;white-space:nowrap;}
+.toast.show{opacity:1;}
+hr{border:none;border-top:1px solid var(--border);margin:14px 0;}
+.pace-track{background:var(--s2);border-radius:6px;height:20px;overflow:hidden;position:relative;}
+.decay-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;}
+.ds{background:var(--s2);border-radius:8px;padding:10px;text-align:center;}
+.ds-label{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:0.08em;margin-bottom:3px;}
+.ds-val{font-family:var(--mono);font-size:15px;font-weight:500;}
+/* Price strip */
+.price-strip{display:flex;overflow-x:auto;gap:8px;padding:10px 16px;background:var(--s1);
+  border-bottom:1px solid var(--border);scrollbar-width:none;}
+.price-strip::-webkit-scrollbar{display:none;}
+.price-pill{flex-shrink:0;background:var(--s2);border:1px solid var(--border);border-radius:20px;
+  padding:5px 12px;display:flex;align-items:center;gap:8px;}
+.price-pill .pticker{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:0.08em;}
+.price-pill .pval{font-family:var(--mono);font-size:11px;font-weight:500;}
+/* Flag badges */
+.flag-red{color:var(--red);font-family:var(--mono);font-size:9px;}
+.flag-amber{color:var(--amber);font-family:var(--mono);font-size:9px;}
+/* Filter bar */
+.filter-bar{display:flex;overflow-x:auto;gap:6px;margin-bottom:12px;scrollbar-width:none;}
+.filter-bar::-webkit-scrollbar{display:none;}
+.fbtn{flex-shrink:0;padding:5px 12px;font-family:var(--mono);font-size:9px;background:none;
+  border:1px solid var(--border);border-radius:20px;color:var(--muted);cursor:pointer;transition:all 0.15s;}
+.fbtn.active{background:var(--btc);border-color:var(--btc);color:#1a0a00;}
+/* Stagger what-if */
+.whatif-result{background:var(--s2);border-radius:8px;padding:12px;margin-top:10px;font-family:var(--mono);font-size:11px;}
+</style>
+</head>
+<body>
+<div class="toast" id="toast">✓ SAVED</div>
+
+<!-- LIVE PRICE STRIP -->
+<div class="price-strip" id="priceStrip">
+  <div class="price-pill"><span class="pticker">BTC</span><span class="pval" id="pBTC" style="color:var(--btc)">—</span></div>
+</div>
+
+<nav class="nav">
+  <button class="nav-tab active" onclick="switchTab('overview')">OVERVIEW</button>
+  <button class="nav-tab" onclick="switchTab('pacing')">PACING</button>
+  <button class="nav-tab" onclick="switchTab('stagger')">STAGGER</button>
+  <button class="nav-tab" onclick="switchTab('log')">DIST LOG</button>
+  <button class="nav-tab" onclick="switchTab('history')">INCOME</button>
+  <button class="nav-tab" onclick="switchTab('funds')">FUNDS</button>
+  <button class="nav-tab" onclick="switchTab('allocate')">ALLOCATE</button>
+  <button class="nav-tab" onclick="switchTab('data')">DATA</button>
+</nav>
+
+<!-- ══════════════════════════════════════
+     OVERVIEW
+══════════════════════════════════════ -->
+<div id="tab-overview" class="page active">
+  <div style="padding:18px 16px 4px;display:flex;justify-content:space-between;align-items:flex-start;">
+    <div>
+      <div class="eyebrow">PORTFOLIO 1</div>
+      <div style="font-size:22px;font-weight:800;letter-spacing:-0.02em;">Income → BTC</div>
+      <div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:2px;" id="ovDate">—</div>
+    </div>
+    <div style="background:linear-gradient(135deg,#2a1a06,#3a2510);border:1px solid #f7931a44;border-radius:8px;padding:8px 12px;text-align:right;">
+      <div style="font-family:var(--mono);font-size:9px;color:var(--btc);letter-spacing:0.1em;">TOTAL → BTC</div>
+      <div style="font-family:var(--mono);font-size:16px;font-weight:500;color:var(--btc2);" id="ovBtcTotal">$0.00</div>
+      <div style="font-family:var(--mono);font-size:9px;color:var(--muted);" id="ovSats">— sats</div>
+    </div>
+  </div>
+  <div style="padding:12px 16px 0;">
+    <div class="stat-grid">
+      <div class="stat-card agreen">
+        <div class="sl">TOTAL DIST / MONTH</div>
+        <div class="sv" style="color:var(--green)" id="ovTotal">$0.00</div>
+        <div class="ss" id="ovTotalSub">FI + UHYL</div>
+      </div>
+      <div class="stat-card abtc">
+        <div class="sl">BTC PURCHASED</div>
+        <div class="sv" style="color:var(--btc)" id="ovBtcPurch">$0.00</div>
+        <div class="ss">logged actual</div>
+      </div>
+      <div class="stat-card">
+        <div class="sl">FI WEEKLY EST.</div>
+        <div class="sv" style="color:var(--blue)" id="ovFI">$0.00</div>
+        <div class="ss">regenerating</div>
+      </div>
+      <div class="stat-card apurple">
+        <div class="sl">UHYL WEEKLY EST.</div>
+        <div class="sv" style="color:var(--purple)" id="ovUHYL">$0.00</div>
+        <div class="ss">decaying</div>
+      </div>
+    </div>
+
+    <!-- Month trend -->
+    <div class="wcard">
+      <div class="sec-label">INCOME TREND</div>
+      <div id="ovTrend" style="font-family:var(--mono);font-size:11px;"></div>
+    </div>
+
+    <!-- FI vs UHYL pacing summary -->
+    <div class="wcard">
+      <div class="sec-label">FI vs UHYL — INCOME PACING</div>
+      <div id="ovPacingBar"><div style="font-family:var(--mono);font-size:10px;color:var(--muted);">Log distributions to see pacing.</div></div>
+    </div>
+
+    <!-- Income mix chart -->
+    <div class="wcard">
+      <div class="sec-label">INCOME MIX — FI vs UHYL</div>
+      <div style="height:130px;"><canvas id="mixChart"></canvas></div>
+    </div>
+
+    <!-- Trend chart -->
+    <div class="wcard">
+      <div class="sec-label">WEEKLY INCOME TREND</div>
+      <div style="height:140px;"><canvas id="trendChart"></canvas></div>
+    </div>
+
+    <!-- BTC accumulation -->
+    <div class="wcard">
+      <div class="sec-label">CUMULATIVE $ ROUTED TO BTC</div>
+      <div style="height:120px;"><canvas id="btcChart"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PACING
+══════════════════════════════════════ -->
+<div id="tab-pacing" class="page">
+  <div class="ph">
+    <div class="eyebrow">DECAY MONITOR</div>
+    <div style="font-size:20px;font-weight:800;">UHYL Decay vs FI Growth</div>
+    <div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:3px;">Is FI keeping pace with UHYL decay?</div>
+  </div>
+
+  <div class="decay-stats" style="padding:0 16px;margin-bottom:12px;">
+    <div class="ds">
+      <div class="ds-label">UHYL BASELINE</div>
+      <div class="ds-val" style="color:var(--purple)" id="pacingBaseline">$0.00</div>
+      <div style="font-family:var(--mono);font-size:8px;color:var(--muted);">/wk starting</div>
+    </div>
+    <div class="ds">
+      <div class="ds-label">UHYL NOW</div>
+      <div class="ds-val" id="pacingUhylNow">$0.00</div>
+      <div style="font-family:var(--mono);font-size:8px;color:var(--muted);">/wk recent avg</div>
+    </div>
+    <div class="ds">
+      <div class="ds-label">DECAY</div>
+      <div class="ds-val" id="pacingDecayPct">—</div>
+      <div style="font-family:var(--mono);font-size:8px;color:var(--muted);">from baseline</div>
+    </div>
+  </div>
+
+  <div style="padding:0 16px;">
+    <div class="wcard">
+      <div class="sec-label">FI COVERAGE OF UHYL BASELINE</div>
+      <div id="pacingCoverage" style="margin-bottom:12px;"><div style="font-family:var(--mono);font-size:10px;color:var(--muted);">Add funds and log distributions to see pacing.</div></div>
+      <div style="font-family:var(--mono);font-size:9px;color:var(--muted);" id="pacingGapLabel"></div>
+    </div>
+
+    <!-- Distribution flags -->
+    <div class="wcard">
+      <div class="sec-label">⚑ DISTRIBUTION FLAGS</div>
+      <div id="distFlags"><div style="font-family:var(--mono);font-size:10px;color:var(--muted);">Log 3+ months of distributions to enable flag detection.</div></div>
+    </div>
+
+    <div class="wcard">
+      <div class="sec-label">UHYL FUND BREAKDOWN</div>
+      <div id="uhylBreakdown"><div style="font-family:var(--mono);font-size:10px;color:var(--muted);">Add UHYL funds in the Funds tab.</div></div>
+    </div>
+
+    <div class="wcard">
+      <div class="sec-label">DECAY CURVE vs FI GROWTH</div>
+      <div style="height:180px;"><canvas id="decayChart"></canvas></div>
+    </div>
+
+    <div class="wcard">
+      <div class="sec-label">FI MILESTONE TARGETS</div>
+      <div id="pacingMilestones"><div style="font-family:var(--mono);font-size:10px;color:var(--muted);">Add FI funds to see milestone targets.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     STAGGER
+══════════════════════════════════════ -->
+<div id="tab-stagger" class="page">
+  <div class="ph">
+    <div class="eyebrow">PAY PERIOD</div>
+    <div style="font-size:20px;font-weight:800;">4-Week Stagger</div>
+    <div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:3px;">Progress toward $1 → $2 → $3/wk milestones</div>
+  </div>
+  <div style="padding:0 16px;">
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="sl">FI TOTAL/WK</div>
+        <div class="sv" style="color:var(--green)" id="stagTotal">$0.00</div>
+        <div class="ss">all 4 weeks</div>
+      </div>
+      <div class="stat-card">
+        <div class="sl">WEAKEST WEEK</div>
+        <div class="sv" id="stagWeak">—</div>
+        <div class="ss" id="stagWeakAmt">—</div>
+      </div>
+    </div>
+    <div class="wcard" id="stagBars"><div class="empty">Add FI funds in the Funds tab.</div></div>
+
+    <!-- What-if simulator -->
+    <div class="wcard">
+      <div class="sec-label">WHAT-IF SIMULATOR</div>
+      <div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:10px;">See how adding a fund affects each weekly bucket</div>
+      <div class="form-row">
+        <div class="fg"><label>TICKER</label><input type="text" id="wiTicker" placeholder="PDI" maxlength="6" autocapitalize="characters" oninput="this.value=this.value.toUpperCase()"/></div>
+        <div class="fg"><label>SHARES</label><input type="number" id="wiShares" placeholder="10" step="1" min="1"/></div>
+      </div>
+      <div class="form-row">
+        <div class="fg"><label>DIST/SHARE ($)</label><input type="number" id="wiDist" placeholder="0.22" step="0.0001"/></div>
+        <div class="fg">
+          <label>PAY WEEK</label>
+          <div class="tg">
+            <button class="tb" id="wiW1" onclick="setWiWeek(1)">1</button>
+            <button class="tb" id="wiW2" onclick="setWiWeek(2)">2</button>
+            <button class="tb" id="wiW3" onclick="setWiWeek(3)">3</button>
+            <button class="tb" id="wiW4" onclick="setWiWeek(4)">4</button>
+          </div>
+        </div>
+      </div>
+      <button class="btn-sm" style="width:100%;margin-bottom:8px;" onclick="runWhatIf()">SIMULATE →</button>
+      <div id="wiResult"></div>
+    </div>
+
+    <div class="wcard">
+      <div class="sec-label">INCOME BY PAY PERIOD</div>
+      <div style="height:160px;"><canvas id="stagChart"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     DIST LOG
+══════════════════════════════════════ -->
+<div id="tab-log" class="page">
+  <div class="ph">
+    <div class="eyebrow">DISTRIBUTIONS</div>
+    <div style="font-size:20px;font-weight:800;">Distribution Log</div>
+    <div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:3px;">Record every distribution as it hits</div>
+  </div>
+
+  <div class="fcard">
+    <div class="form-row">
+      <div class="fg"><label>DATE</label><input type="date" id="logDate"/></div>
+      <div class="fg"><label>TICKER</label><input type="text" id="logTicker" placeholder="HIPS" maxlength="6" autocapitalize="characters" oninput="this.value=this.value.toUpperCase()"/></div>
+    </div>
+    <div class="form-row">
+      <div class="fg"><label>AMOUNT ($)</label><input type="number" id="logAmt" placeholder="12.50" step="0.01" min="0"/></div>
+      <div class="fg">
+        <label>SLEEVE</label>
+        <div class="tg">
+          <button class="tb active green" id="lFI" onclick="setLSleeve('FI')">FI</button>
+          <button class="tb" id="lUHYL" onclick="setLSleeve('UHYL')">UHYL</button>
+        </div>
+      </div>
+    </div>
+    <div id="logErr" class="err"></div>
+    <button class="btn" onclick="addLog()">LOG DISTRIBUTION →</button>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-card agreen">
+      <div class="sl">TOTAL LOGGED</div>
+      <div class="sv" style="color:var(--green)" id="logTotal">$0.00</div>
+      <div class="ss">all distributions</div>
+    </div>
+    <div class="stat-card">
+      <div class="sl">FI TOTAL</div>
+      <div class="sv" style="color:var(--blue)" id="logFITotal">$0.00</div>
+      <div class="ss">all time</div>
+    </div>
+    <div class="stat-card apurple">
+      <div class="sl">UHYL TOTAL</div>
+      <div class="sv" style="color:var(--purple)" id="logUHYLTotal">$0.00</div>
+      <div class="ss">all time</div>
+    </div>
+    <div class="stat-card">
+      <div class="sl">ENTRIES</div>
+      <div class="sv" id="logCount">0</div>
+      <div class="ss">total logged</div>
+    </div>
+  </div>
+
+  <div class="sec-label">FILTER</div>
+  <div class="filter-bar" id="logFilterBar">
+    <button class="fbtn active" onclick="setLogFilter(\'30d\', event)">30 DAYS</button>
+    <button class="fbtn" onclick="setLogFilter(\'60d\', event)">60 DAYS</button>
+    <button class="fbtn" onclick="setLogFilter(\'90d\', event)">90 DAYS</button>
+    <button class="fbtn" onclick="setLogFilter(\'Q126\', event)">Q1 26</button>
+    <button class="fbtn" onclick="setLogFilter(\'Q226\', event)">Q2 26</button>
+    <button class="fbtn" onclick="setLogFilter(\'Q326\', event)">Q3 26</button>
+    <button class="fbtn" onclick="setLogFilter(\'Q426\', event)">Q4 26</button>
+    <button class="fbtn" onclick="setLogFilter(\'all\', event)">ALL TIME</button>
+  </div>
+  <div class="sec-label" id="logFilterLabel">LAST 30 DAYS</div>
+  <div id="logEntries"><div class="empty">No distributions logged yet.</div></div>
+</div>
+
+<!-- ══════════════════════════════════════
+     INCOME HISTORY
+══════════════════════════════════════ -->
+<div id="tab-history" class="page">
+  <div class="ph">
+    <div class="eyebrow">ANALYTICS</div>
+    <div style="font-size:20px;font-weight:800;">Income History</div>
+    <div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:3px;">Monthly totals · fund performance · trends</div>
+  </div>
+  <div style="padding:0 16px;">
+    <div class="stat-grid">
+      <div class="stat-card agreen">
+        <div class="sl">BEST MONTH</div>
+        <div class="sv" style="color:var(--green)" id="hBest">—</div>
+        <div class="ss" id="hBestMo">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="sl">YTD TOTAL</div>
+        <div class="sv" id="hYTD">$0.00</div>
+        <div class="ss" id="hYTDYear">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="sl">AVG / MONTH</div>
+        <div class="sv" id="hAvg">$0.00</div>
+        <div class="ss">trailing 3mo</div>
+      </div>
+      <div class="stat-card">
+        <div class="sl">TOTAL LOGGED</div>
+        <div class="sv" id="hAllTime">$0.00</div>
+        <div class="ss">all time</div>
+      </div>
+    </div>
+
+    <div class="wcard">
+      <div class="sec-label">MONTHLY INCOME</div>
+      <div style="height:180px;"><canvas id="histChart"></canvas></div>
+    </div>
+
+    <div class="wcard">
+      <div class="sec-label">MONTHLY BY FUND</div>
+      <div id="histByFund"><div style="font-family:var(--mono);font-size:10px;color:var(--muted);">Log distributions to see fund breakdown.</div></div>
+    </div>
+
+    <div class="wcard">
+      <div class="sec-label">INCOME BY WEEKLY BUCKET (MONTHLY AVG)</div>
+      <div id="histByWeek"><div style="font-family:var(--mono);font-size:10px;color:var(--muted);">Log FI distributions to see bucket performance.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     FUNDS
+══════════════════════════════════════ -->
+<div id="tab-funds" class="page">
+  <div class="ph">
+    <div class="eyebrow">HOLDINGS</div>
+    <div style="font-size:20px;font-weight:800;">Fund Registry</div>
+    <div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:3px;">Register funds · track shares · milestones</div>
+  </div>
+
+  <div class="fcard">
+    <div class="form-row">
+      <div class="fg"><label>TICKER</label><input type="text" id="fTicker" placeholder="PDI" maxlength="6" autocapitalize="characters" oninput="this.value=this.value.toUpperCase()"/></div>
+      <div class="fg">
+        <label>SLEEVE</label>
+        <div class="tg">
+          <button class="tb active green" id="fFI" onclick="setFSleeve('FI')">FI</button>
+          <button class="tb" id="fUHYL" onclick="setFSleeve('UHYL')">UHYL</button>
+        </div>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="fg"><label>SHARES OWNED</label><input type="number" id="fShares" placeholder="50" step="0.001" min="0"/></div>
+      <div class="fg"><label>AVG COST/SHARE ($)</label><input type="number" id="fPrice" placeholder="15.43" step="0.01" min="0"/></div>
+    </div>
+    <div class="form-row">
+      <div class="fg"><label>DIST/SHARE ($)</label><input type="number" id="fDist" placeholder="0.2200" step="0.0001" min="0"/></div>
+      <div class="fg">
+        <label>FREQUENCY</label>
+        <div class="tg">
+          <button class="tb active" id="fFM" onclick="setFFreq('monthly')">MO</button>
+          <button class="tb" id="fFW" onclick="setFFreq('weekly')">WK</button>
+        </div>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="fg">
+        <label>PAY WEEK (FI ONLY)</label>
+        <div class="tg">
+          <button class="tb" id="fW0" onclick="setFWeek(0)">—</button>
+          <button class="tb" id="fW1" onclick="setFWeek(1)">1</button>
+          <button class="tb" id="fW2" onclick="setFWeek(2)">2</button>
+          <button class="tb" id="fW3" onclick="setFWeek(3)">3</button>
+          <button class="tb" id="fW4" onclick="setFWeek(4)">4</button>
+        </div>
+      </div>
+    </div>
+    <div id="fErr" class="err"></div>
+    <button class="btn" onclick="addFund()">ADD FUND →</button>
+  </div>
+
+  <div class="sec-label">FI SLEEVE</div>
+  <div class="wcard" id="fiFundList"><div class="empty">No FI funds added.</div></div>
+  <div class="sec-label" style="margin-top:14px;">UHYL SLEEVE</div>
+  <div class="wcard" id="uhylFundList"><div class="empty">No UHYL funds added.</div></div>
+</div>
+
+<!-- ══════════════════════════════════════
+     ALLOCATE
+══════════════════════════════════════ -->
+<div id="tab-allocate" class="page">
+  <div class="ph">
+    <div class="eyebrow">DECISION ENGINE</div>
+    <div style="font-size:20px;font-weight:800;">Allocator & Transactions</div>
+    <div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:3px;">Where should new capital go?</div>
+  </div>
+
+  <div class="fcard">
+    <div class="fg" style="margin-bottom:10px;"><label>AMOUNT TO DEPLOY ($)</label><input type="number" id="allocAmt" placeholder="250.00" step="10" min="0"/></div>
+    <div id="allocErr" class="err"></div>
+    <button class="btn" onclick="runAllocator()">FIND BEST ALLOCATION →</button>
+  </div>
+  <div id="allocResult"></div>
+
+  <hr/>
+  <div class="sec-label">LOG TRANSACTION</div>
+  <div class="fcard">
+    <div style="margin-bottom:10px;">
+      <div class="tg">
+        <button class="tb active green" id="txBuy" onclick="setTxType('buy')">BUY</button>
+        <button class="tb" id="txSell" onclick="setTxType('sell')">SELL</button>
+        <button class="tb" id="txBTC" onclick="setTxType('btc')">BTC PURCHASE</button>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="fg"><label id="txTickerLabel">TICKER</label><input type="text" id="txTicker" placeholder="PDI" maxlength="6" autocapitalize="characters" oninput="this.value=this.value.toUpperCase()"/></div>
+      <div class="fg" id="txSharesGroup"><label id="txSharesLabel">SHARES</label><input type="number" id="txShares" placeholder="10" step="0.001" min="0"/></div>
+    </div>
+    <div class="form-row">
+      <div class="fg"><label id="txPriceLabel">PRICE/SHARE ($)</label><input type="number" id="txPrice" placeholder="15.43" step="0.01" min="0"/></div>
+      <div class="fg"><label>DATE</label><input type="date" id="txDate"/></div>
+    </div>
+    <div id="txErr" class="err"></div>
+    <button class="btn" id="txBtn" onclick="logTransaction()">LOG BUY →</button>
+  </div>
+
+  <div class="sec-label">FILTER</div>
+  <div class="filter-bar" id="txFilterBar">
+    <button class="fbtn active" onclick="setTxFilter(\'30d\', event)">30 DAYS</button>
+    <button class="fbtn" onclick="setTxFilter(\'60d\', event)">60 DAYS</button>
+    <button class="fbtn" onclick="setTxFilter(\'90d\', event)">90 DAYS</button>
+    <button class="fbtn" onclick="setTxFilter(\'Q126\', event)">Q1 26</button>
+    <button class="fbtn" onclick="setTxFilter(\'Q226\', event)">Q2 26</button>
+    <button class="fbtn" onclick="setTxFilter(\'Q326\', event)">Q3 26</button>
+    <button class="fbtn" onclick="setTxFilter(\'Q426\', event)">Q4 26</button>
+    <button class="fbtn" onclick="setTxFilter(\'all\', event)">ALL TIME</button>
+  </div>
+  <div class="sec-label" id="txFilterLabel">LAST 30 DAYS</div>
+  <div id="txHistory"><div class="empty">No transactions logged.</div></div>
+</div>
+
+<!-- ══════════════════════════════════════
+     DATA
+══════════════════════════════════════ -->
+<div id="tab-data" class="page">
+  <div class="ph">
+    <div class="eyebrow">SETTINGS & BACKUP</div>
+    <div style="font-size:20px;font-weight:800;">Data Management</div>
+  </div>
+
+  <div class="fcard">
+    <div class="sec-label">LIVE PRICES — FMP API KEY</div>
+    <div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:10px;">Paste your free API key from financialmodelingprep.com once. Prices update automatically on load.</div>
+    <div class="fg" style="margin-bottom:10px;">
+      <label>API KEY</label>
+      <input type="text" id="setApiKey" placeholder="your_fmp_api_key_here" oninput="saveApiKey(this.value)"/>
+    </div>
+    <div id="apiStatus" style="font-family:var(--mono);font-size:9px;color:var(--muted);"></div>
+  </div>
+
+  <div class="fcard">
+    <div class="sec-label">SETTINGS</div>
+    <div class="form-row">
+      <div class="fg"><label>UHYL BASELINE ($/wk)</label><input type="number" id="setBaseline" placeholder="10.00" step="0.01" oninput="saveSetting('uhylBaseline',this.value)"/></div>
+    </div>
+    <div style="font-family:var(--mono);font-size:9px;color:var(--muted);">Baseline = your UHYL weekly income when you started tracking</div>
+  </div>
+
+  <div class="wcard" style="display:flex;flex-direction:column;gap:12px;">
+    <div>
+      <div class="sec-label">EXPORT</div>
+      <div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:10px;">Download all data — save to Google Drive monthly</div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn-sm" style="flex:1;" onclick="exportJSON()">EXPORT JSON</button>
+        <button class="btn-sm" style="flex:1;" onclick="exportCSV()">EXPORT CSV</button>
+      </div>
+    </div>
+    <hr/>
+    <div>
+      <div class="sec-label">IMPORT</div>
+      <div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:8px;">Restore from a previously exported JSON file</div>
+      <input type="file" id="importFile" accept=".json" onchange="importJSON(this)" style="font-family:var(--mono);font-size:10px;color:var(--muted);"/>
+    </div>
+    <hr/>
+    <div>
+      <div class="sec-label">RESET</div>
+      <button class="btn-danger" onclick="resetAll()">RESET ALL DATA</button>
+    </div>
+  </div>
+
+  <div class="wcard" style="margin-top:12px;">
+    <div class="sec-label">STORAGE SUMMARY</div>
+    <div id="dataSummary" style="font-family:var(--mono);font-size:11px;color:var(--muted);line-height:2;"></div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════
+// CONSTANTS
+// ══════════════════════════════════════
+const KNOWN_WEEKS={
+  PDI:1,PCN:1,PTY:1,JLS:1,JGH:1,BGH:1,GQI:1,ERH:1,
+  CSHI:2,HYBI:2,GPIQ:2,DNP:2,DPG:2,TBLD:2,
+  IAUI:3,IYRI:3,CSQ:3,CHI:3,CCD:3,CGO:3,CHW:3,STK:3,
+  HIPS:4,PFFA:4,GBAB:4,BGT:4,DLY:4,DBL:4,UTG:4,UTF:4,EMD:4,RNP:4,
+};
+const UHYL_DEFAULT=['MSTY','WNTR','CHPY','ULTY','PLTW'];
+const STORE='p1_v4';
+
+// ══════════════════════════════════════
+// STATE
+// ══════════════════════════════════════
+let S={
+  funds:[],
+  distLog:[],
+  transactions:[],  // {id,date,type:'buy'|'sell'|'btc',ticker,shares,price,total,btcPrice}
+  uhylBaseline:10,
+  fmpApiKey:'',
+};
+
+// ══════════════════════════════════════
+// PERSIST
+// ══════════════════════════════════════
+function save(){
+  try{localStorage.setItem(STORE,JSON.stringify(S));toast('✓ SAVED');}
+  catch(e){toast('⚠ SAVE FAILED');}
+}
+function load(){
+  try{
+    // Try new store first
+    const r=localStorage.getItem(STORE);
+    if(r){S={...S,...JSON.parse(r)};return;}
+    // Migrate from old store
+    const old=localStorage.getItem('p1_v3');
+    if(old){
+      const o=JSON.parse(old);
+      S.funds=o.funds||[];
+      S.distLog=o.distLog||[];
+      S.uhylBaseline=o.uhylBaseline||10;
+      // Migrate old purchases to new transaction format
+      if(o.purchases&&o.purchases.length){
+        S.transactions=o.purchases.map(p=>({
+          id:p.id,date:p.date,type:'buy',
+          ticker:p.ticker,shares:p.shares,price:p.price,total:p.total
+        }));
+      }
+      save();
+    }
+  }catch(e){}
+}
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg||'✓ SAVED';t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),1800);
+}
+
+// ══════════════════════════════════════
+// MATH HELPERS
+// ══════════════════════════════════════
+function dpw(dist,freq){return freq==='monthly'?dist/4.33:dist;}
+function wkIncome(f){return dpw(f.dist,f.freq)*(f.shares||0);}
+function fmt2(n){return(+(n||0)).toFixed(2);}
+function fmtInt(n){return Math.round(n||0).toLocaleString();}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
+function wkColor(w){return{1:'#3dd68c',2:'#9b7cff',3:'#f7931a',4:'#4a9eff'}[w]||'#4a6070';}
+function getWeekKey(dt){const d=new Date(dt+'T12:00:00');d.setDate(d.getDate()-d.getDay());return d.toISOString().slice(0,10);}
+function getMonthKey(dt){return dt.slice(0,7);}
+
+// Date filter helper
+function filterByPeriod(items,period){
+  const now=new Date();
+  const today=now.toISOString().slice(0,10);
+  if(period==='all')return items;
+  if(period==='30d'){const d=new Date(now);d.setDate(d.getDate()-30);const s=d.toISOString().slice(0,10);return items.filter(i=>i.date>=s);}
+  if(period==='60d'){const d=new Date(now);d.setDate(d.getDate()-60);const s=d.toISOString().slice(0,10);return items.filter(i=>i.date>=s);}
+  if(period==='90d'){const d=new Date(now);d.setDate(d.getDate()-90);const s=d.toISOString().slice(0,10);return items.filter(i=>i.date>=s);}
+  // Quarterly e.g. 'Q126'
+  const qm=period.match(/^Q(\d)(\d{2})$/);
+  if(qm){
+    const q=parseInt(qm[1]),yr='20'+qm[2];
+    const starts=[null,'01','04','07','10'];
+    const ends=[null,'03','06','09','12'];
+    const s=`${yr}-${starts[q]}-01`;
+    const lastDay=new Date(parseInt(yr),parseInt(ends[q]),0).getDate();
+    const e=`${yr}-${ends[q]}-${lastDay}`;
+    return items.filter(i=>i.date>=s&&i.date<=e);
+  }
+  return items;
+}
+
+// ══════════════════════════════════════
+// TAB SWITCHING
+// ══════════════════════════════════════
+function switchTab(tab){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  const tabs=['overview','pacing','stagger','log','history','funds','allocate','data'];
+  tabs.forEach((t,i)=>{document.querySelectorAll('.nav-tab')[i].classList.toggle('active',t===tab);});
+  if(tab==='overview')renderOverview();
+  if(tab==='pacing')renderPacing();
+  if(tab==='stagger')renderStagger();
+  if(tab==='log')renderLog();
+  if(tab==='history')renderHistory();
+  if(tab==='funds')renderFunds();
+  if(tab==='allocate'){renderAllocator();renderTxHistory();}
+  if(tab==='data')renderDataTab();
+}
+
+// ══════════════════════════════════════
+// LIVE PRICES (FMP API)
+// ══════════════════════════════════════
+let livePrices={};
+async function fetchPrices(){
+  const key=S.fmpApiKey;
+  const statusEl=document.getElementById('apiStatus');
+  if(!key||key.trim().length<10){
+    if(statusEl)statusEl.textContent='No API key set.';
+    return;
+  }
+  // Build dynamic ticker list from actual fund registry
+  const fundTickers=[...new Set(S.funds.map(f=>f.ticker).filter(Boolean))];
+  if(!fundTickers.length){
+    try{
+      const rb=await fetch(`https://financialmodelingprep.com/api/v3/quote/BTCUSD?apikey=${key.trim()}`);
+      if(rb.ok){
+        const btcData=await rb.json();
+        if(Array.isArray(btcData)&&btcData[0]&&btcData[0].price>0){
+          livePrices['BTC']=btcData[0].price;
+        }
+      }
+      renderPriceStrip();
+    }catch(e){}
+    if(statusEl)statusEl.textContent='No funds in registry to fetch prices for.';
+    return;
+  }
+  try{
+    // Fetch all fund prices in one call
+    const url=`https://financialmodelingprep.com/api/v3/quote/${fundTickers.join(',')}?apikey=${key.trim()}`;
+    const r=await fetch(url);
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    const data=await r.json();
+    if(Array.isArray(data)&&data.length>0){
+      data.forEach(d=>{
+        if(d&&d.symbol&&d.price!=null&&d.price>0){
+          livePrices[d.symbol]=d.price;
+          // Write price into fund registry for allocator use
+          const fund=S.funds.find(f=>f.ticker===d.symbol);
+          if(fund){
+            fund.price=d.price;
+            if(!fund.avgCost||fund.avgCost===fund.price)fund.avgCost=fund.avgCost||d.price;
+          }
+        }
+      });
+      // Persist updated prices
+      try{localStorage.setItem(STORE,JSON.stringify(S));}catch(e){}
+    } else if(data&&data['Error Message']){
+      throw new Error(data['Error Message']);
+    }
+    // Fetch BTC separately
+    const rb=await fetch(`https://financialmodelingprep.com/api/v3/quote/BTCUSD?apikey=${key.trim()}`);
+    if(rb.ok){
+      const btcData=await rb.json();
+      if(Array.isArray(btcData)&&btcData[0]&&btcData[0].price>0){
+        livePrices['BTC']=btcData[0].price;
+      }
+    }
+    renderPriceStrip();
+    renderFunds();
+    if(statusEl)statusEl.textContent=`✓ Prices updated ${new Date().toLocaleTimeString()} — ${Object.keys(livePrices).length-1} funds`;
+  }catch(e){
+    if(statusEl)statusEl.textContent=`⚠ Price fetch failed: ${e.message}`;
+    console.error('fetchPrices error:',e);
+  }
+}
+function renderPriceStrip(){
+  const strip=document.getElementById('priceStrip');
+  if(!strip)return;
+  // Always show BTC first
+  const btcPrice=livePrices['BTC'];
+  let html=`<div class="price-pill"><span class="pticker">BTC</span><span class="pval" style="color:var(--btc)">${btcPrice?'$'+fmtInt(Math.round(btcPrice)):'—'}</span></div>`;
+  // Add all registry funds with prices
+  [...new Map(S.funds.map(f=>[f.ticker,f])).values()].forEach(f=>{
+    const p=livePrices[f.ticker];
+    const week=f.payWeek;
+    const color=f.sleeve==='UHYL'?'var(--purple)':(week?wkColor(week):'var(--text)');
+    html+=`<div class="price-pill"><span class="pticker" style="color:${color}">${f.ticker}</span><span class="pval">${p!=null?'$'+fmt2(p):'—'}</span></div>`;
+  });
+  strip.innerHTML=html;
+}
+function saveApiKey(val){
+  S.fmpApiKey=val.trim();
+  save();
+  if(val.trim().length>10)fetchPrices();
+}
+
+// ══════════════════════════════════════
+// OVERVIEW
+// ══════════════════════════════════════
+function renderOverview(){
+  const fi=S.funds.filter(f=>f.sleeve==='FI');
+  const uhyl=S.funds.filter(f=>f.sleeve==='UHYL');
+  const fiWk=fi.reduce((a,f)=>a+wkIncome(f),0);
+  const uhylWk=uhyl.reduce((a,f)=>a+wkIncome(f),0);
+
+  // Total from dist log this month
+  const now=new Date();
+  const thisMonth=now.toISOString().slice(0,7);
+  const lastMonth=new Date(now.getFullYear(),now.getMonth()-1,1).toISOString().slice(0,7);
+  const thisMonthTotal=S.distLog.filter(d=>d.date.startsWith(thisMonth)).reduce((a,d)=>a+d.amount,0);
+  const lastMonthTotal=S.distLog.filter(d=>d.date.startsWith(lastMonth)).reduce((a,d)=>a+d.amount,0);
+  const allDistTotal=S.distLog.reduce((a,d)=>a+d.amount,0);
+
+  // BTC from actual logged transactions
+  const btcTx=S.transactions.filter(t=>t.type==='btc');
+  const totalBtcDollars=btcTx.reduce((a,t)=>a+t.total,0);
+  const totalSats=btcTx.reduce((a,t)=>{
+    if(t.btcPrice&&t.btcPrice>0)return a+((t.total/t.btcPrice)*1e8);
+    return a;
+  },0);
+
+  document.getElementById('ovDate').textContent=now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+  document.getElementById('ovTotal').textContent='$'+fmt2(thisMonthTotal||allDistTotal/Math.max(1,new Set(S.distLog.map(d=>d.date.slice(0,7))).size));
+  document.getElementById('ovTotalSub').textContent=thisMonth+' distributions';
+  document.getElementById('ovBtcPurch').textContent='$'+fmt2(totalBtcDollars);
+  document.getElementById('ovFI').textContent='$'+fmt2(fiWk);
+  document.getElementById('ovUHYL').textContent='$'+fmt2(uhylWk);
+  document.getElementById('ovBtcTotal').textContent='$'+fmt2(totalBtcDollars);
+  document.getElementById('ovSats').textContent=totalSats>0?fmtInt(Math.round(totalSats))+' sats':'— sats';
+
+  // Month trend
+  const trendEl=document.getElementById('ovTrend');
+  if(lastMonthTotal>0){
+    const diff=thisMonthTotal-lastMonthTotal;
+    const pct=((diff/lastMonthTotal)*100).toFixed(1);
+    const up=diff>=0;
+    trendEl.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;">
+      <span style="color:var(--muted);font-size:10px;">This month vs last</span>
+      <span style="color:${up?'var(--green)':'var(--red)'};font-size:13px;font-weight:500;">${up?'▲':'▼'} ${Math.abs(pct)}%</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:10px;margin-top:4px;">
+      <span style="color:var(--muted);">Last: $${fmt2(lastMonthTotal)}</span>
+      <span style="color:var(--text);">This: $${fmt2(thisMonthTotal)}</span>
+    </div>`;
+  } else {
+    trendEl.innerHTML='<div style="font-size:10px;color:var(--muted);">Log distributions to see monthly trend.</div>';
+  }
+
+  // Pacing bar
+  const pEl=document.getElementById('ovPacingBar');
+  if(S.uhylBaseline>0&&fiWk>0){
+    const pct=Math.min(100,(fiWk/S.uhylBaseline)*100);
+    pEl.innerHTML=`
+      <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;margin-bottom:5px;">
+        <span style="color:var(--green)">FI $${fmt2(fiWk)}/wk</span>
+        <span style="color:var(--muted)">${pct.toFixed(0)}% of UHYL baseline</span>
+        <span style="color:var(--purple)">UHYL $${fmt2(S.uhylBaseline)}/wk</span>
+      </div>
+      <div class="pace-track">
+        <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,var(--green),#6ee7b7);border-radius:6px;display:flex;align-items:center;padding-left:8px;font-family:var(--mono);font-size:9px;color:#06120a;font-weight:500;transition:width 0.6s;">
+          ${pct>12?pct.toFixed(0)+'%':''}
+        </div>
+      </div>
+      <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:4px;">
+        Gap to replace: <span style="color:var(--amber)">$${fmt2(Math.max(0,S.uhylBaseline-fiWk))}/wk</span>
+      </div>`;
+  } else {
+    pEl.innerHTML='<div style="font-family:var(--mono);font-size:10px;color:var(--muted);">Set UHYL baseline in Data tab and add funds to see pacing.</div>';
+  }
+
+  drawMixChart(fiWk,uhylWk);
+  drawTrendChart();
+  drawBtcChart();
+}
+
+// ══════════════════════════════════════
+// PACING
+// ══════════════════════════════════════
+function renderPacing(){
+  const fiWk=S.funds.filter(f=>f.sleeve==='FI').reduce((a,f)=>a+wkIncome(f),0);
+  const uhylFunds=S.funds.filter(f=>f.sleeve==='UHYL');
+  const uhylLogs=S.distLog.filter(d=>d.sleeve==='UHYL').sort((a,b)=>new Date(a.date)-new Date(b.date));
+  let uhylNow=uhylFunds.reduce((a,f)=>a+wkIncome(f),0);
+  if(uhylLogs.length>=4){
+    const recent=uhylLogs.slice(-8);
+    const byWk={};
+    recent.forEach(d=>{const k=getWeekKey(d.date);byWk[k]=(byWk[k]||0)+d.amount;});
+    const wks=Object.values(byWk);
+    uhylNow=wks.reduce((a,v)=>a+v,0)/wks.length;
+  }
+  const baseline=S.uhylBaseline||10;
+  const decay=baseline>0?((uhylNow-baseline)/baseline)*100:0;
+  const decayColor=decay<-15?'var(--red)':decay<-5?'var(--amber)':'var(--green)';
+  const coverage=baseline>0?Math.min(100,(fiWk/baseline)*100):0;
+  const gap=Math.max(0,baseline-fiWk);
+
+  document.getElementById('pacingBaseline').textContent='$'+fmt2(baseline);
+  document.getElementById('pacingUhylNow').textContent='$'+fmt2(uhylNow);
+  const dpEl=document.getElementById('pacingDecayPct');
+  dpEl.textContent=(decay>=0?'+':'')+decay.toFixed(1)+'%';
+  dpEl.style.color=decayColor;
+
+  const covEl=document.getElementById('pacingCoverage');
+  covEl.innerHTML=`
+    <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;margin-bottom:6px;">
+      <span style="color:var(--green)">FI: $${fmt2(fiWk)}/wk</span>
+      <span style="color:var(--muted)">${coverage.toFixed(1)}%</span>
+      <span style="color:var(--purple)">Baseline: $${fmt2(baseline)}/wk</span>
+    </div>
+    <div style="background:var(--s2);border-radius:8px;height:28px;overflow:hidden;">
+      <div style="height:100%;width:${coverage}%;background:linear-gradient(90deg,var(--green),#6ee7b7);border-radius:8px;display:flex;align-items:center;padding-left:10px;font-family:var(--mono);font-size:10px;color:#061208;font-weight:500;transition:width 0.5s;">
+        ${coverage>12?'FI '+coverage.toFixed(0)+'%':''}
+      </div>
+    </div>`;
+  document.getElementById('pacingGapLabel').textContent=
+    gap>0?'Need $'+fmt2(gap)+'/wk more FI to replace UHYL baseline':'✓ FI has surpassed UHYL baseline';
+  document.getElementById('pacingGapLabel').style.color=gap>0?'var(--amber)':'var(--green)';
+
+  // Distribution flags
+  renderDistFlags();
+
+  // UHYL breakdown
+  const ubEl=document.getElementById('uhylBreakdown');
+  if(!uhylFunds.length){
+    ubEl.innerHTML='<div style="font-family:var(--mono);font-size:10px;color:var(--muted);">Add UHYL funds in the Funds tab.</div>';
+  } else {
+    const maxInc=Math.max(...uhylFunds.map(f=>wkIncome(f)),0.01);
+    ubEl.innerHTML=uhylFunds.map(f=>{
+      const inc=wkIncome(f);
+      const pct=(inc/maxInc)*100;
+      const fLogs=S.distLog.filter(d=>d.ticker===f.ticker&&d.sleeve==='UHYL').slice(-4);
+      const fRecent=fLogs.length?fLogs.reduce((a,d)=>a+d.amount,0)/fLogs.length:null;
+      return `<div style="margin-bottom:12px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+          <span style="font-family:var(--mono);font-size:12px;font-weight:500;color:var(--purple)">${f.ticker}</span>
+          <span style="font-family:var(--mono);font-size:11px;color:var(--text)">$${fmt2(inc)}/wk est.</span>
+        </div>
+        <div class="track"><div class="fill" style="width:${pct}%;background:var(--purple);opacity:0.7;"></div></div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:3px;">
+          ${f.shares} shares · $${f.dist.toFixed(4)}/${f.freq==='weekly'?'wk':'mo'}
+          ${fRecent!==null?` · recent avg $${fmt2(fRecent)}/dist`:''}
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  // Milestones
+  const milestones=[1,2,3,5,10];
+  document.getElementById('pacingMilestones').innerHTML=
+    '<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;">'+
+    milestones.map(m=>{
+      const reached=fiWk>=m;
+      return `<div style="background:${reached?'var(--green)18':'var(--s2)'};border:1px solid ${reached?'var(--green)44':'var(--border)'};border-radius:8px;padding:8px 6px;text-align:center;">
+        <div style="font-family:var(--mono);font-size:10px;font-weight:500;color:${reached?'var(--green)':'var(--muted)'}">$${m}/wk</div>
+        <div style="font-family:var(--mono);font-size:14px;font-weight:700;color:${reached?'var(--green)':'var(--text)'};">${reached?'✓':'—'}</div>
+      </div>`;
+    }).join('')+'</div>';
+
+  drawDecayChart();
+}
+
+function renderDistFlags(){
+  const el=document.getElementById('distFlags');
+  const fiFunds=S.funds.filter(f=>f.sleeve==='FI');
+  if(!fiFunds.length||S.distLog.length<10){
+    el.innerHTML='<div style="font-family:var(--mono);font-size:10px;color:var(--muted);">Log 3+ months of distributions to enable flag detection.</div>';
+    return;
+  }
+  const flags=[];
+  fiFunds.forEach(f=>{
+    const logs=S.distLog.filter(d=>d.ticker===f.ticker).sort((a,b)=>new Date(a.date)-new Date(b.date));
+    if(logs.length<3)return;
+    // Compare last 3 vs previous 3
+    const recent=logs.slice(-3).reduce((a,d)=>a+d.amount,0)/3;
+    const prev=logs.slice(-6,-3).reduce((a,d)=>a+d.amount,0)/Math.max(1,Math.min(3,logs.length-3));
+    if(prev>0){
+      const chg=((recent-prev)/prev)*100;
+      const expectedWk=dpw(f.dist,f.freq)*f.shares;
+      const actualRecent=recent;
+      if(chg<-15){flags.push({ticker:f.ticker,level:'red',msg:`Distribution down ${Math.abs(chg).toFixed(0)}% vs prior period`,chg});}
+      else if(chg<-5){flags.push({ticker:f.ticker,level:'amber',msg:`Distribution softening ${Math.abs(chg).toFixed(0)}% vs prior period`,chg});}
+      else if(chg>10){flags.push({ticker:f.ticker,level:'green',msg:`Distribution up ${chg.toFixed(0)}% vs prior period`,chg});}
+    }
+  });
+  if(!flags.length){
+    el.innerHTML='<div style="font-family:var(--mono);font-size:10px;color:var(--green);">✓ No flags — all distributions stable</div>';
+    return;
+  }
+  el.innerHTML=flags.map(f=>{
+    const color=f.level==='red'?'var(--red)':f.level==='amber'?'var(--amber)':'var(--green)';
+    const icon=f.level==='red'?'⚠':f.level==='amber'?'△':'↑';
+    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);">
+      <span style="font-family:var(--mono);font-size:12px;font-weight:500;color:${color}">${f.ticker}</span>
+      <span style="font-family:var(--mono);font-size:9px;color:${color}">${icon} ${f.msg}</span>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════
+// CHARTS
+// ══════════════════════════════════════
+function setupCanvas(id,h){
+  const c=document.getElementById(id);if(!c)return null;
+  const ctx=c.getContext('2d');
+  const parent=c.parentElement;
+  const W=Math.min(parent.clientWidth||340, window.innerWidth-32)||340;
+  c.style.width='100%';
+  c.width=W*devicePixelRatio;c.height=h*devicePixelRatio;
+  ctx.scale(devicePixelRatio,devicePixelRatio);
+  ctx.clearRect(0,0,W,h);
+  return{ctx,W,H:h};
+}
+
+function drawMixChart(fi,uhyl){
+  const r=setupCanvas('mixChart',130);if(!r)return;
+  const{ctx,W,H}=r;
+  const vals=[fi,uhyl],colors=['#3dd68c','#9b7cff'],labels=['FI','UHYL'];
+  const max=Math.max(...vals,0.01);
+  const bH=30,gap=12,startY=16,labelW=36;
+  vals.forEach((v,i)=>{
+    const y=startY+i*(bH+gap);
+    const barStart=labelW+4;
+    const barW=W-barStart-8;
+    const w=Math.max(0,(v/max)*barW);
+    ctx.fillStyle='#111820';ctx.beginPath();ctx.roundRect(barStart,y,barW,bH,4);ctx.fill();
+    if(w>0){ctx.fillStyle=colors[i];ctx.globalAlpha=0.82;ctx.beginPath();ctx.roundRect(barStart,y,w,bH,4);ctx.fill();ctx.globalAlpha=1;}
+    ctx.fillStyle=colors[i];ctx.font='500 9px JetBrains Mono';ctx.textAlign='right';ctx.fillText(labels[i],labelW,y+bH/2+4);
+    if(v>0){ctx.fillStyle='#dde8f0';ctx.font='500 10px JetBrains Mono';ctx.textAlign='left';ctx.fillText('$'+fmt2(v)+'/wk',barStart+w+6,y+bH/2+4);}
+  });
+  const total=fi+uhyl||1;
+  ctx.fillStyle='#4a6070';ctx.font='400 9px JetBrains Mono';ctx.textAlign='center';
+  ctx.fillText('FI '+((fi/total)*100).toFixed(0)+'% · UHYL '+((uhyl/total)*100).toFixed(0)+'%',W/2,H-2);
+}
+
+function drawTrendChart(){
+  const r=setupCanvas('trendChart',140);if(!r)return;
+  const{ctx,W,H}=r;
+  const byWeek={};
+  S.distLog.forEach(d=>{
+    const k=getWeekKey(d.date);
+    byWeek[k]=byWeek[k]||{fi:0,uhyl:0};
+    if(d.sleeve==='FI')byWeek[k].fi+=d.amount;else byWeek[k].uhyl+=d.amount;
+  });
+  const keys=Object.keys(byWeek).sort().slice(-12);
+  if(keys.length<2){
+    ctx.fillStyle='#1e2e3a';ctx.font='400 10px JetBrains Mono';ctx.textAlign='center';
+    ctx.fillText('Log distributions to see trend',W/2,H/2);return;
+  }
+  const pad={l:8,r:8,t:12,b:26};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  const maxY=Math.max(...keys.map(k=>byWeek[k].fi+byWeek[k].uhyl),1);
+  const xS=cW/(keys.length-1);
+  [0.25,0.5,0.75,1].forEach(p=>{
+    const y=pad.t+cH*(1-p);
+    ctx.strokeStyle='#1a2535';ctx.lineWidth=0.5;ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(W-pad.r,y);ctx.stroke();
+  });
+  ['#3dd68c','#9b7cff'].forEach((color,si)=>{
+    const key=si===0?'fi':'uhyl';
+    ctx.beginPath();
+    keys.forEach((k,i)=>{const x=pad.l+i*xS,y=pad.t+cH*(1-byWeek[k][key]/maxY);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
+    ctx.strokeStyle=color;ctx.lineWidth=2;
+    if(si===1){ctx.setLineDash([4,3]);}ctx.stroke();ctx.setLineDash([]);
+  });
+  ctx.fillStyle='#4a6070';ctx.font='400 8px JetBrains Mono';ctx.textAlign='center';
+  keys.forEach((k,i)=>{if(i%Math.max(1,Math.floor(keys.length/4))===0||i===keys.length-1)ctx.fillText(k.slice(5),pad.l+i*xS,H-4);});
+  ctx.fillStyle='#3dd68c';ctx.font='400 9px JetBrains Mono';ctx.textAlign='left';ctx.fillText('— FI',pad.l,10);
+  ctx.fillStyle='#9b7cff';ctx.fillText('- - UHYL',pad.l+36,10);
+}
+
+function drawBtcChart(){
+  const r=setupCanvas('btcChart',120);if(!r)return;
+  const{ctx,W,H}=r;
+  const btcTx=S.transactions.filter(t=>t.type==='btc').sort((a,b)=>new Date(a.date)-new Date(b.date));
+  if(btcTx.length<2){
+    ctx.fillStyle='#1e2e3a';ctx.font='400 10px JetBrains Mono';ctx.textAlign='center';
+    ctx.fillText('Log BTC purchases in Allocate tab',W/2,H/2);return;
+  }
+  let cum=0;
+  const pts=btcTx.map(t=>{cum+=t.total;return{date:t.date,val:cum};});
+  const maxY=pts[pts.length-1].val||1;
+  const pad={l:8,r:8,t:12,b:24};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  const xS=cW/(pts.length-1);
+  ctx.beginPath();
+  pts.forEach((p,i)=>{const x=pad.l+i*xS,y=pad.t+cH*(1-p.val/maxY);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
+  ctx.lineTo(pad.l+(pts.length-1)*xS,pad.t+cH);ctx.lineTo(pad.l,pad.t+cH);ctx.closePath();
+  const g=ctx.createLinearGradient(0,pad.t,0,pad.t+cH);g.addColorStop(0,'#f7931a44');g.addColorStop(1,'#f7931a05');
+  ctx.fillStyle=g;ctx.fill();
+  ctx.beginPath();
+  pts.forEach((p,i)=>{const x=pad.l+i*xS,y=pad.t+cH*(1-p.val/maxY);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
+  ctx.strokeStyle='#f7931a';ctx.lineWidth=2;ctx.stroke();
+  ctx.fillStyle='#f7931a';ctx.font='500 10px JetBrains Mono';ctx.textAlign='right';
+  ctx.fillText('$'+fmt2(maxY)+' total → BTC',W-pad.r,10);
+  ctx.fillStyle='#4a6070';ctx.font='400 8px JetBrains Mono';ctx.textAlign='center';
+  const step=Math.max(1,Math.floor(pts.length/4));
+  pts.forEach((p,i)=>{if(i%step===0||i===pts.length-1)ctx.fillText(p.date.slice(5),pad.l+i*xS,H-2);});
+}
+
+function drawDecayChart(){
+  const r=setupCanvas('decayChart',180);if(!r)return;
+  const{ctx,W,H}=r;
+  const uhylByWk={},fiByWk={};
+  S.distLog.filter(d=>d.sleeve==='UHYL').forEach(d=>{const k=getWeekKey(d.date);uhylByWk[k]=(uhylByWk[k]||0)+d.amount;});
+  S.distLog.filter(d=>d.sleeve==='FI').forEach(d=>{const k=getWeekKey(d.date);fiByWk[k]=(fiByWk[k]||0)+d.amount;});
+  const allWks=[...new Set([...Object.keys(uhylByWk),...Object.keys(fiByWk)])].sort().slice(-16);
+  if(allWks.length<2){
+    ctx.fillStyle='#1e2e3a';ctx.font='400 10px JetBrains Mono';ctx.textAlign='center';
+    ctx.fillText('Log UHYL + FI distributions to see decay curve',W/2,H/2);return;
+  }
+  const pad={l:8,r:8,t:16,b:28};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  const maxY=Math.max(S.uhylBaseline,...Object.values(uhylByWk),...Object.values(fiByWk),1);
+  const xS=cW/(allWks.length-1);
+  const baseY=pad.t+cH*(1-S.uhylBaseline/maxY);
+  ctx.strokeStyle='#9b7cff44';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(pad.l,baseY);ctx.lineTo(W-pad.r,baseY);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle='#9b7cff66';ctx.font='400 8px JetBrains Mono';ctx.textAlign='left';
+  ctx.fillText('baseline $'+fmt2(S.uhylBaseline),pad.l+2,baseY-3);
+  ctx.beginPath();
+  allWks.forEach((k,i)=>{const x=pad.l+i*xS,y=pad.t+cH*(1-(uhylByWk[k]||0)/maxY);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
+  ctx.strokeStyle='#9b7cff';ctx.lineWidth=2;ctx.setLineDash([4,3]);ctx.stroke();ctx.setLineDash([]);
+  ctx.beginPath();
+  allWks.forEach((k,i)=>{const x=pad.l+i*xS,y=pad.t+cH*(1-(fiByWk[k]||0)/maxY);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
+  ctx.strokeStyle='#3dd68c';ctx.lineWidth=2;ctx.stroke();
+  ctx.fillStyle='#4a6070';ctx.font='400 8px JetBrains Mono';ctx.textAlign='center';
+  const step=Math.max(1,Math.floor(allWks.length/4));
+  allWks.forEach((k,i)=>{if(i%step===0||i===allWks.length-1)ctx.fillText(k.slice(5),pad.l+i*xS,H-4);});
+  ctx.fillStyle='#3dd68c';ctx.font='400 9px JetBrains Mono';ctx.textAlign='left';ctx.fillText('— FI',pad.l,12);
+  ctx.fillStyle='#9b7cff';ctx.fillText('- - UHYL',pad.l+38,12);
+}
+
+function drawStaggerChart(weekData){
+  const r=setupCanvas('stagChart',160);if(!r)return;
+  const{ctx,W,H}=r;
+  const weeks=[1,2,3,4];
+  const vals=weeks.map(w=>weekData[w]||0);
+  const maxVal=Math.max(...vals,1);
+  const maxY=maxVal<=3?3:maxVal<=5?5:maxVal<=10?10:Math.ceil(maxVal/5)*5;
+  const pad={l:28,r:8,t:20,b:28};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  const bW=(cW/4)-10;
+  const gridVals=maxY<=3?[1,2,3]:maxY<=5?[1,2,3,4,5]:maxY<=10?[2,4,6,8,10]:[Math.round(maxY/4),Math.round(maxY/2),Math.round(maxY*3/4),maxY];
+  gridVals.forEach(m=>{
+    if(m>maxY)return;
+    const y=pad.t+cH*(1-m/maxY);
+    ctx.strokeStyle='#1a2535';ctx.lineWidth=0.8;ctx.setLineDash([3,3]);
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(W-pad.r,y);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#4a6070';ctx.font='400 8px JetBrains Mono';ctx.textAlign='right';
+    ctx.fillText('$'+m,pad.l-3,y+3);
+  });
+  weeks.forEach((w,i)=>{
+    const x=pad.l+i*(cW/4)+5,bH=Math.max(0,cH*(vals[i]/maxY)),y=pad.t+cH-bH;
+    const color=wkColor(w);
+    if(bH>0){ctx.fillStyle=color;ctx.globalAlpha=0.75;ctx.beginPath();ctx.roundRect(x,y,bW,bH,[4,4,0,0]);ctx.fill();ctx.globalAlpha=1;}
+    ctx.fillStyle=color;ctx.font='500 9px JetBrains Mono';ctx.textAlign='center';ctx.fillText('WK'+w,x+bW/2,H-6);
+    if(vals[i]>0){ctx.fillStyle='#dde8f0';ctx.font='400 9px JetBrains Mono';ctx.fillText('$'+fmt2(vals[i]),x+bW/2,Math.max(y-4,pad.t+10));}
+  });
+}
+
+function drawHistChart(monthlyData){
+  const r=setupCanvas('histChart',180);if(!r)return;
+  const{ctx,W,H}=r;
+  const keys=Object.keys(monthlyData).sort().slice(-12);
+  if(!keys.length){
+    ctx.fillStyle='#1e2e3a';ctx.font='400 10px JetBrains Mono';ctx.textAlign='center';
+    ctx.fillText('Log distributions to see monthly history',W/2,H/2);return;
+  }
+  const vals=keys.map(k=>monthlyData[k]);
+  const maxY=Math.max(...vals,1);
+  const pad={l:32,r:8,t:24,b:32};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  const n=keys.length;
+  const bW=Math.max(8,Math.floor(cW/n)-4);
+  const gap=(cW-(bW*n))/(n+1);
+  // Y axis grid
+  [0.25,0.5,0.75,1].forEach(p=>{
+    const yv=maxY*p;
+    const y=pad.t+cH*(1-p);
+    ctx.strokeStyle='#1a2535';ctx.lineWidth=0.5;ctx.setLineDash([2,3]);
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(W-pad.r,y);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#4a6070';ctx.font='400 7px JetBrains Mono';ctx.textAlign='right';
+    ctx.fillText('$'+Math.round(yv),pad.l-3,y+3);
+  });
+  // Month abbreviations
+  const moAbbr=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  keys.forEach((k,i)=>{
+    const x=pad.l+gap+(i*(bW+gap));
+    const bH=Math.max(2,cH*(vals[i]/maxY));
+    const y=pad.t+cH-bH;
+    ctx.fillStyle='#4a9eff';ctx.globalAlpha=0.75;ctx.beginPath();ctx.roundRect(x,y,bW,bH,[3,3,0,0]);ctx.fill();ctx.globalAlpha=1;
+    // Label: "Jan" on first row, "26" year below
+    const mo=parseInt(k.slice(5))-1;
+    const yr=k.slice(2,4);
+    ctx.fillStyle='#4a6070';ctx.font='400 7px JetBrains Mono';ctx.textAlign='center';
+    ctx.fillText(moAbbr[mo],x+bW/2,H-18);
+    ctx.fillText("'"+yr,x+bW/2,H-8);
+    if(vals[i]>0){
+      ctx.fillStyle='#dde8f0';ctx.font='400 8px JetBrains Mono';
+      ctx.fillText('$'+Math.round(vals[i]),x+bW/2,Math.max(y-3,pad.t+10));
+    }
+  });
+}
+
+// ══════════════════════════════════════
+// STAGGER
+// ══════════════════════════════════════
+let wiWeek=1;
+function setWiWeek(w){
+  wiWeek=w;
+  [1,2,3,4].forEach(n=>document.getElementById('wiW'+n).classList.remove('active'));
+  document.getElementById('wiW'+w).classList.add('active');
+}
+function runWhatIf(){
+  const ticker=document.getElementById('wiTicker').value.trim().toUpperCase();
+  const shares=parseFloat(document.getElementById('wiShares').value);
+  const dist=parseFloat(document.getElementById('wiDist').value);
+  const el=document.getElementById('wiResult');
+  if(!ticker||!shares||!dist){el.innerHTML='<div style="font-family:var(--mono);font-size:10px;color:var(--red);">Fill in all fields.</div>';return;}
+  // Current week totals
+  const fiFunds=S.funds.filter(f=>f.sleeve==='FI');
+  const current={1:0,2:0,3:0,4:0};
+  fiFunds.forEach(f=>{if(f.payWeek)current[f.payWeek]+=wkIncome(f);});
+  // After adding
+  const after={...current};
+  const addedInc=shares*(dist/4.33);
+  after[wiWeek]+=addedInc;
+  el.innerHTML=`<div class="whatif-result">
+    <div style="font-family:var(--mono);font-size:9px;color:var(--btc);letter-spacing:0.1em;margin-bottom:8px;">WEEK ${wiWeek} IMPACT</div>
+    ${[1,2,3,4].map(w=>{
+      const diff=after[w]-current[w];
+      const color=wkColor(w);
+      return `<div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+        <span style="color:${color}">WK${w}</span>
+        <span>$${fmt2(current[w])} → <span style="color:${w===wiWeek?'var(--green)':'var(--text)'}">$${fmt2(after[w])}</span>${diff>0?` <span style="color:var(--green);font-size:9px;">+$${fmt2(diff)}/wk</span>`:''}</span>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+function renderStagger(){
+  const fiFunds=S.funds.filter(f=>f.sleeve==='FI');
+  const wkData={1:0,2:0,3:0,4:0};
+  const wkFunds={1:[],2:[],3:[],4:[]};
+  fiFunds.forEach(f=>{const w=f.payWeek;if(w){wkData[w]+=wkIncome(f);wkFunds[w].push(f.ticker);}});
+  const total=Object.values(wkData).reduce((a,v)=>a+v,0);
+  document.getElementById('stagTotal').textContent='$'+fmt2(total);
+  const weakW=Object.entries(wkData).sort((a,b)=>a[1]-b[1])[0];
+  document.getElementById('stagWeak').textContent='Week '+weakW[0];
+  document.getElementById('stagWeak').style.color=wkColor(parseInt(weakW[0]));
+  document.getElementById('stagWeakAmt').textContent='$'+fmt2(weakW[1])+'/wk';
+  const bEl=document.getElementById('stagBars');
+  if(!fiFunds.length){bEl.innerHTML='<div class="empty">Add FI funds in the Funds tab.</div>';return;}
+  bEl.innerHTML=[1,2,3,4].map(w=>{
+    const inc=wkData[w],color=wkColor(w);
+    const pct=Math.min(100,(inc/3)*100);
+    const nextM=[1,2,3].find(m=>inc<m)||3;
+    const gap=Math.max(0,nextM-inc);
+    return `<div style="margin-bottom:14px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+        <span style="font-family:var(--mono);font-size:10px;font-weight:500;color:${color}">WEEK ${w}</span>
+        <span style="font-family:var(--mono);font-size:10px;color:${color}">$${fmt2(inc)}/wk</span>
+      </div>
+      <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:4px;">${wkFunds[w].length?wkFunds[w].join(' · '):'no funds'}</div>
+      <div class="track"><div class="fill" style="width:${pct}%;background:${color};opacity:0.8;"></div></div>
+      <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:8px;color:var(--dim);margin-top:2px;">
+        <span>$0</span><span style="color:${inc>=1?color:'inherit'}">$1</span><span style="color:${inc>=2?color:'inherit'}">$2</span><span>$3</span>
+      </div>
+      ${gap<3?`<div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:3px;">$${fmt2(gap)}/wk to next milestone</div>`:''}
+    </div>${w<4?'<hr/>':''}`;
+  }).join('');
+  drawStaggerChart(wkData);
+}
+
+// ══════════════════════════════════════
+// DIST LOG
+// ══════════════════════════════════════
+let lSleeve='FI',logFilter='30d';
+function setLSleeve(s){
+  lSleeve=s;
+  document.getElementById('lFI').classList.toggle('active',s==='FI');
+  document.getElementById('lFI').classList.toggle('green',s==='FI');
+  document.getElementById('lUHYL').classList.toggle('active',s==='UHYL');
+  document.getElementById('lUHYL').classList.toggle('purple',s==='UHYL');
+}
+function setLogFilter(f,e){
+  logFilter=f;
+  document.querySelectorAll('#logFilterBar .fbtn').forEach(b=>b.classList.remove('active'));
+  if(e&&e.target)e.target.classList.add('active');
+  const labels={'30d':'LAST 30 DAYS','60d':'LAST 60 DAYS','90d':'LAST 90 DAYS','all':'ALL TIME'};
+  const qm=f.match(/^Q(\d)(\d{2})$/);
+  document.getElementById('logFilterLabel').textContent=qm?`Q${qm[1]} 20${qm[2]}`:(labels[f]||f);
+  renderLog();
+}
+function addLog(){
+  const date=document.getElementById('logDate').value;
+  const ticker=document.getElementById('logTicker').value.trim().toUpperCase();
+  const amount=parseFloat(document.getElementById('logAmt').value);
+  const err=document.getElementById('logErr');
+  if(!date){err.textContent='Enter a date.';return;}
+  if(!ticker){err.textContent='Enter a ticker.';return;}
+  if(!amount||amount<=0){err.textContent='Enter an amount.';return;}
+  err.textContent='';
+  S.distLog.unshift({id:uid(),date,ticker,amount,sleeve:lSleeve});
+  document.getElementById('logDate').value=new Date().toISOString().slice(0,10);
+  document.getElementById('logTicker').value='';
+  document.getElementById('logAmt').value='';
+  save();renderLog();
+}
+function removeLog(id){if(!confirm('Delete this entry?'))return;S.distLog=S.distLog.filter(d=>d.id!==id);save();renderLog();}
+function renderLog(){
+  const total=S.distLog.reduce((a,d)=>a+d.amount,0);
+  const fi=S.distLog.filter(d=>d.sleeve==='FI').reduce((a,d)=>a+d.amount,0);
+  const uhyl=S.distLog.filter(d=>d.sleeve==='UHYL').reduce((a,d)=>a+d.amount,0);
+  document.getElementById('logTotal').textContent='$'+fmt2(total);
+  document.getElementById('logFITotal').textContent='$'+fmt2(fi);
+  document.getElementById('logUHYLTotal').textContent='$'+fmt2(uhyl);
+  document.getElementById('logCount').textContent=S.distLog.length;
+  const filtered=filterByPeriod(S.distLog,logFilter);
+  const el=document.getElementById('logEntries');
+  if(!filtered.length){el.innerHTML='<div class="empty">No distributions in this period.</div>';return;}
+  el.innerHTML=filtered.map(d=>{
+    const c=d.sleeve==='FI'?'var(--blue)':'var(--purple)';
+    return `<div class="log-row">
+      <div>
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:2px;">
+          <span style="font-family:var(--mono);font-size:13px;font-weight:500;color:${c}">${d.ticker}</span>
+          <span class="chip" style="background:${c}18;color:${c}">${d.sleeve}</span>
+        </div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--muted);">${d.date}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="text-align:right;">
+          <div style="font-family:var(--mono);font-size:14px;font-weight:500;">$${fmt2(d.amount)}</div>
+        </div>
+        <button class="rm" onclick="removeLog('${d.id}')">×</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════
+// INCOME HISTORY
+// ══════════════════════════════════════
+function renderHistory(){
+  const byMonth={};
+  S.distLog.forEach(d=>{
+    const m=getMonthKey(d.date);
+    byMonth[m]=(byMonth[m]||0)+d.amount;
+  });
+  const months=Object.keys(byMonth).sort();
+  const allTime=Object.values(byMonth).reduce((a,v)=>a+v,0);
+  const now=new Date();
+  const thisYear=now.getFullYear().toString();
+  const ytd=Object.entries(byMonth).filter(([m])=>m.startsWith(thisYear)).reduce((a,[,v])=>a+v,0);
+  // Best month
+  let bestMo='—',bestVal=0;
+  months.forEach(m=>{if(byMonth[m]>bestVal){bestVal=byMonth[m];bestMo=m;}});
+  // Trailing 3mo avg
+  const last3=months.slice(-3).map(m=>byMonth[m]);
+  const avg3=last3.length?last3.reduce((a,v)=>a+v,0)/last3.length:0;
+
+  document.getElementById('hBest').textContent='$'+fmt2(bestVal);
+  document.getElementById('hBestMo').textContent=bestMo;
+  document.getElementById('hYTD').textContent='$'+fmt2(ytd);
+  document.getElementById('hYTDYear').textContent=thisYear+' total';
+  document.getElementById('hAvg').textContent='$'+fmt2(avg3);
+  document.getElementById('hAllTime').textContent='$'+fmt2(allTime);
+
+  drawHistChart(byMonth);
+
+  // By fund breakdown
+  const byFundMonth={};
+  S.distLog.forEach(d=>{
+    const m=getMonthKey(d.date);
+    byFundMonth[d.ticker]=byFundMonth[d.ticker]||{};
+    byFundMonth[d.ticker][m]=(byFundMonth[d.ticker][m]||0)+d.amount;
+  });
+  const recentMonths=months.slice(-3);
+  const el=document.getElementById('histByFund');
+  const tickers=Object.keys(byFundMonth);
+  if(!tickers.length){el.innerHTML='<div style="font-family:var(--mono);font-size:10px;color:var(--muted);">Log distributions to see fund breakdown.</div>';return;}
+  const fundTotals=tickers.map(t=>({ticker:t,total:Object.values(byFundMonth[t]).reduce((a,v)=>a+v,0)})).sort((a,b)=>b.total-a.total);
+  el.innerHTML=fundTotals.map(({ticker,total})=>{
+    const fund=S.funds.find(f=>f.ticker===ticker);
+    const color=fund?fund.sleeve==='FI'?'var(--blue)':'var(--purple)':'var(--muted)';
+    const recent=recentMonths.map(m=>'$'+fmt2(byFundMonth[ticker][m]||0)).join(' · ');
+    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);">
+      <div>
+        <span style="font-family:var(--mono);font-size:12px;font-weight:500;color:${color}">${ticker}</span>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:2px;">${recent}</div>
+      </div>
+      <span style="font-family:var(--mono);font-size:11px;color:var(--text)">$${fmt2(total)}</span>
+    </div>`;
+  }).join('');
+
+  // By weekly bucket
+  const byWeekBucket={1:0,2:0,3:0,4:0};
+  let weekCount=0;
+  const recentLogs=filterByPeriod(S.distLog,'90d');
+  recentLogs.forEach(d=>{
+    const fund=S.funds.find(f=>f.ticker===d.ticker);
+    if(fund&&fund.sleeve==='FI'&&fund.payWeek)byWeekBucket[fund.payWeek]+=d.amount;
+  });
+  const wkEl=document.getElementById('histByWeek');
+  const wkTotal=Object.values(byWeekBucket).reduce((a,v)=>a+v,0);
+  if(!wkTotal){wkEl.innerHTML='<div style="font-family:var(--mono);font-size:10px;color:var(--muted);">Log FI distributions to see bucket performance.</div>';return;}
+  const maxWk=Math.max(...Object.values(byWeekBucket),1);
+  wkEl.innerHTML=[1,2,3,4].map(w=>{
+    const val=byWeekBucket[w];
+    const pct=(val/maxWk)*100;
+    const color=wkColor(w);
+    return `<div style="margin-bottom:10px;">
+      <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;margin-bottom:3px;">
+        <span style="color:${color}">WEEK ${w}</span>
+        <span>$${fmt2(val)} <span style="color:var(--muted);font-size:9px;">(90 days)</span></span>
+      </div>
+      <div class="track"><div class="fill" style="width:${pct}%;background:${color};opacity:0.8;"></div></div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════
+// FUNDS
+// ══════════════════════════════════════
+let fSleeve='FI',fFreq='monthly',fWeek=0;
+function setFSleeve(s){
+  fSleeve=s;
+  document.getElementById('fFI').classList.toggle('active',s==='FI');
+  document.getElementById('fFI').classList.toggle('green',s==='FI');
+  document.getElementById('fUHYL').classList.toggle('active',s==='UHYL');
+  document.getElementById('fUHYL').classList.toggle('purple',s==='UHYL');
+}
+function setFFreq(f){
+  fFreq=f;
+  document.getElementById('fFM').classList.toggle('active',f==='monthly');
+  document.getElementById('fFW').classList.toggle('active',f==='weekly');
+}
+function setFWeek(w){
+  fWeek=w;
+  [0,1,2,3,4].forEach(n=>{
+    const b=document.getElementById('fW'+n);
+    if(b){b.classList.remove('active');b.style.removeProperty('background');b.style.removeProperty('color');}
+  });
+  const btn=document.getElementById('fW'+w);
+  if(btn){
+    btn.classList.add('active');
+    if(w>0){btn.style.background=wkColor(w);btn.style.color='#060809';}
+    else{btn.style.background='var(--muted)';btn.style.color='var(--bg)';}
+  }
+}
+function addFund(){
+  const ticker=document.getElementById('fTicker').value.trim().toUpperCase();
+  const shares=parseFloat(document.getElementById('fShares').value);
+  const price=parseFloat(document.getElementById('fPrice').value);
+  const dist=parseFloat(document.getElementById('fDist').value);
+  const err=document.getElementById('fErr');
+  if(!ticker){err.textContent='Enter a ticker.';return;}
+  if(!dist||dist<=0){err.textContent='Enter distribution per share.';return;}
+  if(S.funds.find(f=>f.ticker===ticker)){err.textContent=ticker+' already in registry. Edit it below.';return;}
+  err.textContent='';
+  // Auto-detect pay week from known list if not manually set
+  const autoWeek=fWeek>0?fWeek:(KNOWN_WEEKS[ticker]||null);
+  S.funds.push({ticker,sleeve:fSleeve,shares:isNaN(shares)?0:shares,
+    price:isNaN(price)?null:price,avgCost:isNaN(price)?null:price,
+    dist,freq:fFreq,payWeek:autoWeek,addedDate:new Date().toISOString().slice(0,10)});
+  document.getElementById('fTicker').value='';
+  document.getElementById('fShares').value='';
+  document.getElementById('fPrice').value='';
+  document.getElementById('fDist').value='';
+  fWeek=0;setFWeek(0);
+  save();renderFunds();renderPriceStrip();
+  // Fetch price for newly added fund if API key exists
+  if(S.fmpApiKey&&S.fmpApiKey.length>10)fetchPrices();
+}
+function removeFund(ticker){
+  if(!confirm('Remove '+ticker+' from registry?'))return;
+  S.funds=S.funds.filter(f=>f.ticker!==ticker);save();renderFunds();renderPriceStrip();
+}
+function updateFund(ticker,field,val){
+  const f=S.funds.find(f=>f.ticker===ticker);
+  if(!f)return;
+  if(field==='shares')f.shares=parseFloat(val)||0;
+  if(field==='dist'){f.dist=parseFloat(val)||0;f.distUpdated=new Date().toISOString().slice(0,10);}
+  if(field==='price')f.price=parseFloat(val)||null;
+  if(field==='payWeek')f.payWeek=parseInt(val)||null;
+  save();
+}
+function renderFunds(){
+  const fi=S.funds.filter(f=>f.sleeve==='FI');
+  const uhyl=S.funds.filter(f=>f.sleeve==='UHYL');
+  const maxInc=Math.max(...S.funds.map(f=>wkIncome(f)),0.01);
+
+  function fundCard(f){
+    const inc=wkIncome(f);
+    const pct=(inc/maxInc)*100;
+    const week=f.payWeek;
+    const color=week?wkColor(week):(f.sleeve==='UHYL'?'var(--purple)':'var(--muted)');
+    const livePrice=livePrices[f.ticker];
+    const avgCost=f.avgCost||f.price;
+    const gainLoss=livePrice&&avgCost?(livePrice-avgCost)/avgCost*100:null;
+    const ms=f.sleeve==='FI'?[1,2,3].map(m=>{
+      const needed=Math.ceil(m/dpw(f.dist,f.freq));
+      const gap=Math.max(0,needed-f.shares);
+      return gap>0?`<span style="font-family:var(--mono);font-size:9px;color:var(--muted)">+${gap}→$${m}/wk</span>`
+        :`<span style="font-family:var(--mono);font-size:9px;color:var(--green)">✓$${m}/wk</span>`;
+    }):[];
+    return `<div class="fund-row">
+      <div class="dot" style="background:${color}"></div>
+      <div style="flex:1;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+          <div style="display:flex;align-items:center;gap:7px;">
+            <span style="font-family:var(--mono);font-size:13px;font-weight:500;color:${color}">${f.ticker}</span>
+            ${week?`<span class="chip" style="color:${color};background:${color}18">WK${week}</span>`:''}
+            ${f.distUpdated?`<span class="chip" style="background:var(--amber)18;color:var(--amber)">DIST UPD</span>`:''}
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-family:var(--mono);font-size:11px;color:${color}">$${fmt2(inc)}/wk</span>
+            <button class="rm" onclick="removeFund('${f.ticker}')">×</button>
+          </div>
+        </div>
+        ${livePrice!=null?`<div style="font-family:var(--mono);font-size:10px;margin-bottom:4px;">
+          Live: <span style="color:var(--btc2)">$${fmt2(livePrice)}</span>
+          ${gainLoss!==null?`<span style="color:${gainLoss>=0?'var(--green)':'var(--red)'}"> ${gainLoss>=0?'+':''}${gainLoss.toFixed(1)}%</span>`:''}
+          ${avgCost?`<span style="color:var(--muted)"> · avg $${fmt2(avgCost)}</span>`:''}
+        </div>`:''}
+        <div style="background:var(--s2);border-radius:3px;height:5px;overflow:hidden;margin-bottom:6px;">
+          <div style="height:100%;width:${pct}%;background:${color};opacity:0.7;border-radius:3px;"></div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:5px;">
+          <div style="display:flex;align-items:center;gap:4px;">
+            <span style="font-family:var(--mono);font-size:9px;color:var(--muted)">SH</span>
+            <input type="number" value="${f.shares}" step="0.001" min="0"
+              style="width:70px;padding:3px 6px;font-size:11px;background:var(--s2);border:1px solid var(--border);border-radius:4px;color:var(--text);font-family:var(--mono);"
+              onchange="updateFund('${f.ticker}','shares',this.value);renderFunds();"/>
+          </div>
+          <div style="display:flex;align-items:center;gap:4px;">
+            <span style="font-family:var(--mono);font-size:9px;color:var(--muted)">DIST</span>
+            <input type="number" value="${f.dist}" step="0.0001" min="0"
+              style="width:78px;padding:3px 6px;font-size:11px;background:var(--s2);border:1px solid var(--border);border-radius:4px;color:var(--text);font-family:var(--mono);"
+              onchange="updateFund('${f.ticker}','dist',this.value);renderFunds();"/>
+          </div>
+          <div style="display:flex;align-items:center;gap:4px;">
+            <span style="font-family:var(--mono);font-size:9px;color:var(--muted)">WK</span>
+            <select style="width:52px;padding:3px 5px;font-size:11px;background:var(--s2);border:1px solid var(--border);border-radius:4px;color:var(--text);font-family:var(--mono);"
+              onchange="updateFund('${f.ticker}','payWeek',this.value);renderFunds();">
+              <option value="0" ${!week?'selected':''}>—</option>
+              ${[1,2,3,4].map(w=>`<option value="${w}" ${week===w?'selected':''}>${w}</option>`).join('')}
+            </select>
+          </div>
+          <span style="font-family:var(--mono);font-size:9px;color:var(--muted)">${f.freq.slice(0,2).toUpperCase()}</span>
+        </div>
+        ${ms.length?`<div style="display:flex;gap:8px;flex-wrap:wrap;">${ms.join('')}</div>`:''}
+      </div>
+    </div>`;
+  }
+
+  document.getElementById('fiFundList').innerHTML=fi.length?fi.map(fundCard).join(''):'<div class="empty">No FI funds added.</div>';
+  document.getElementById('uhylFundList').innerHTML=uhyl.length?uhyl.map(fundCard).join(''):'<div class="empty">No UHYL funds added.</div>';
+}
+
+// ══════════════════════════════════════
+// ALLOCATOR — Balance-first, split-capable, flag-aware
+// ══════════════════════════════════════
+function renderAllocator(){}
+function runAllocator(){
+  const amount=parseFloat(document.getElementById('allocAmt').value);
+  const err=document.getElementById('allocErr');
+  if(!amount||amount<=0){err.textContent='Enter an amount to deploy.';return;}
+  err.textContent='';
+
+  const fiFunds=S.funds.filter(f=>f.sleeve==='FI'&&f.dist>0&&f.price>0);
+  if(!fiFunds.length){
+    document.getElementById('allocResult').innerHTML=
+      '<div class="empty">Add FI funds — prices need to load via API first.</div>';return;
+  }
+
+  // Build distribution flags
+  const flagMap={};
+  fiFunds.forEach(f=>{
+    const logs=S.distLog.filter(d=>d.ticker===f.ticker).sort((a,b)=>new Date(a.date)-new Date(b.date));
+    if(logs.length>=6){
+      const recent=logs.slice(-3).reduce((a,d)=>a+d.amount,0)/3;
+      const prev=logs.slice(-6,-3).reduce((a,d)=>a+d.amount,0)/3;
+      if(prev>0){
+        const chg=((recent-prev)/prev)*100;
+        if(chg<-15)flagMap[f.ticker]='red';
+        else if(chg<-5)flagMap[f.ticker]='amber';
+      }
+    }
+  });
+
+  function fundScore(f){
+    const base=dpw(f.dist,f.freq)/f.price;
+    if(flagMap[f.ticker]==='red')return base*0.01;
+    if(flagMap[f.ticker]==='amber')return base*0.5;
+    return base;
+  }
+
+  const bestByWeek={};
+  [1,2,3,4].forEach(w=>{
+    const wFunds=fiFunds.filter(f=>f.payWeek===w);
+    if(!wFunds.length)return;
+    bestByWeek[w]=[...wFunds].sort((a,b)=>fundScore(b)-fundScore(a))[0];
+  });
+
+  const wkInc={1:0,2:0,3:0,4:0};
+  fiFunds.forEach(f=>{if(f.payWeek)wkInc[f.payWeek]+=wkIncome(f);});
+
+  function isConcentrationCapped(fund){
+    const w=fund.payWeek;
+    const wFunds=fiFunds.filter(f=>f.payWeek===w);
+    if(wFunds.length<3)return false;
+    const weekTotal=wkInc[w]||0;
+    if(weekTotal<=0)return false;
+    return wkIncome(fund)/weekTotal>=0.4;
+  }
+
+  const TOLERANCE=0.05; // $0.05/wk tolerance band — don't over-correct tiny gaps
+  let remaining=amount;
+  const deployments={};
+  const simInc={...wkInc};
+  let iterations=0;
+  let postBalanceMode=false;
+
+  while(remaining>0.01&&iterations<100){
+    iterations++;
+    const weeksWithFunds=Object.keys(bestByWeek).map(Number);
+    if(!weeksWithFunds.length)break;
+    weeksWithFunds.sort((a,b)=>simInc[a]-simInc[b]);
+
+    // FIX 1: Target strongest week, not next weakest
+    const weakestWk=weeksWithFunds[0];
+    const weakestLevel=simInc[weakestWk];
+    const targetLevel=Math.max(...weeksWithFunds.map(w=>simInc[w]));
+    const incGap=targetLevel-weakestLevel;
+
+    // FIX 5: Tolerance band — if all weeks within $0.05, switch to growth mode
+    const allBalanced=weeksWithFunds.every(w=>Math.abs(simInc[w]-targetLevel)<=TOLERANCE);
+    if(allBalanced)postBalanceMode=true;
+
+    let fund;
+    if(postBalanceMode){
+      // FIX 4: Post-balance growth mode — pick best eligible fund globally
+      const allEligible=fiFunds.filter(f=>
+        f.payWeek&&flagMap[f.ticker]!=='red'&&!isConcentrationCapped(f)
+      );
+      if(!allEligible.length)break;
+      fund=allEligible.sort((a,b)=>fundScore(b)-fundScore(a))[0];
+      const incPerDollar=dpw(fund.dist,fund.freq)/fund.price;
+      if(incPerDollar<=0)break;
+      const shares=remaining/fund.price;
+      const incAdded=shares*dpw(fund.dist,fund.freq);
+      const w=fund.payWeek;
+      if(deployments[w]){
+        deployments[w].dollars+=remaining;
+        deployments[w].shares+=shares;
+        deployments[w].incAdded+=incAdded;
+      } else {
+        deployments[w]={fund,dollars:remaining,shares,incAdded,
+          flagged:flagMap[fund.ticker]||null,before:wkInc[w]||0,growthMode:true};
+      }
+      simInc[w]+=incAdded;
+      remaining=0;
+      break;
+    }
+
+    // FIX 5: Skip if gap is within tolerance
+    if(incGap<=TOLERANCE){
+      postBalanceMode=true;
+      continue;
+    }
+
+    // Get best fund for weakest week
+    fund=bestByWeek[weakestWk];
+
+    // FIX 3: Stricter flag handling — hard exclude reds, amber only if no alternative
+    const wFundsNoRed=fiFunds.filter(f=>f.payWeek===weakestWk&&flagMap[f.ticker]!=='red');
+    if(wFundsNoRed.length>0){
+      const wFundsNoAmber=wFundsNoRed.filter(f=>flagMap[f.ticker]!=='amber');
+      const pool=wFundsNoAmber.length?wFundsNoAmber:wFundsNoRed;
+      fund=pool.sort((a,b)=>fundScore(b)-fundScore(a))[0];
+    }
+    // If all funds in week are red-flagged, use best red (no choice)
+    if(!fund)fund=bestByWeek[weakestWk];
+
+    // FIX 2: Concentration cap check
+    if(isConcentrationCapped(fund)){
+      const alt=fiFunds.filter(f=>f.payWeek===weakestWk&&!isConcentrationCapped(f)&&flagMap[f.ticker]!=='red');
+      if(alt.length)fund=alt.sort((a,b)=>fundScore(b)-fundScore(a))[0];
+      else{delete bestByWeek[weakestWk];continue;}
+    }
+
+    const incPerDollar=dpw(fund.dist,fund.freq)/fund.price;
+    if(incPerDollar<=0)break;
+
+    // Dollars needed to bring weakest up to target (strongest)
+    let dollarsNeeded=incGap/incPerDollar;
+    dollarsNeeded=Math.min(dollarsNeeded,remaining);
+    if(dollarsNeeded<=0.001){postBalanceMode=true;continue;}
+
+    const shares=dollarsNeeded/fund.price;
+    const incAdded=shares*dpw(fund.dist,fund.freq);
+    if(deployments[weakestWk]){
+      deployments[weakestWk].dollars+=dollarsNeeded;
+      deployments[weakestWk].shares+=shares;
+      deployments[weakestWk].incAdded+=incAdded;
+    } else {
+      deployments[weakestWk]={fund,dollars:dollarsNeeded,shares,incAdded,
+        flagged:flagMap[fund.ticker]||null,before:wkInc[weakestWk]||0};
+    }
+    simInc[weakestWk]+=incAdded;
+    remaining-=dollarsNeeded;
+  }
+
+  const dList=Object.entries(deployments).sort((a,b)=>b[1].dollars-a[1].dollars);
+  if(!dList.length){
+    document.getElementById('allocResult').innerHTML=
+      '<div class="empty">No eligible funds. Check fund registry has prices loaded.</div>';return;
+  }
+
+  const totalDeployed=amount-Math.max(0,remaining);
+  let html=`<div style="background:linear-gradient(135deg,#0a1420,#0c1014);border:1px solid var(--btc);border-radius:var(--r);padding:16px;margin-bottom:12px;">
+    <div style="font-family:var(--mono);font-size:9px;color:var(--btc);letter-spacing:0.15em;margin-bottom:12px;">DEPLOYMENT PLAN — $${fmt2(totalDeployed)}</div>`;
+
+  dList.forEach(([w,d])=>{
+    const color=wkColor(parseInt(w));
+    const afterInc=d.before+d.incAdded;
+    html+=`<div style="background:var(--s2);border-radius:8px;padding:12px;margin-bottom:8px;border-left:3px solid ${color};">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-family:var(--mono);font-size:15px;font-weight:700;color:${color}">${d.fund.ticker}</span>
+          <span class="chip" style="background:${color}18;color:${color}">WK${w}</span>
+          ${d.growthMode?'<span class="chip" style="background:var(--green)18;color:var(--green)">GROWTH</span>':''}
+          ${d.flagged==='red'?'<span class="chip" style="background:var(--red)18;color:var(--red)">⚠ RED</span>':''}
+          ${d.flagged==='amber'?'<span class="chip" style="background:var(--amber)18;color:var(--amber)">△ AMBER</span>':''}
+        </div>
+        <span style="font-family:var(--mono);font-size:14px;font-weight:600;color:var(--btc);">$${fmt2(d.dollars)}</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:8px;">
+        <div><div style="font-family:var(--mono);font-size:8px;color:var(--muted);">SHARES</div>
+          <div style="font-family:var(--mono);font-size:15px;font-weight:500;color:${color}">${d.shares.toFixed(3)}</div></div>
+        <div><div style="font-family:var(--mono);font-size:8px;color:var(--muted);">INC ADDED</div>
+          <div style="font-family:var(--mono);font-size:15px;font-weight:500;color:var(--green)">+$${fmt2(d.incAdded)}/wk</div></div>
+        <div><div style="font-family:var(--mono);font-size:8px;color:var(--muted);">WK${w} AFTER</div>
+          <div style="font-family:var(--mono);font-size:15px;font-weight:500;">$${fmt2(afterInc)}/wk</div></div>
+      </div>
+      <div style="font-family:var(--mono);font-size:9px;color:var(--muted);">
+        Wk${w}: $${fmt2(d.before)} → <span style="color:${color}">$${fmt2(afterInc)}/wk</span>
+        · $${fmt2(d.fund.price)}/sh
+      </div>
+    </div>`;
+  });
+
+  html+=`<div style="margin-top:12px;">
+    <div style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:0.1em;margin-bottom:8px;">ALL WEEKS AFTER</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;">`;
+  [1,2,3,4].forEach(w=>{
+    const color=wkColor(w);
+    const before=wkInc[w]||0;
+    const after=simInc[w]||0;
+    const changed=after>before+0.001;
+    html+=`<div style="background:var(--s2);border-radius:8px;padding:8px;text-align:center;border:1px solid ${changed?color+'55':'var(--border)'};">
+      <div style="font-family:var(--mono);font-size:8px;color:${color};margin-bottom:3px;">WK${w}</div>
+      <div style="font-family:var(--mono);font-size:12px;font-weight:600;color:${changed?color:'var(--text)'};">$${fmt2(after)}</div>
+      ${changed?`<div style="font-family:var(--mono);font-size:8px;color:var(--green);">+$${fmt2(after-before)}</div>`
+        :`<div style="font-family:var(--mono);font-size:8px;color:var(--muted);">no change</div>`}
+    </div>`;
+  });
+  html+=`</div>`;
+  if(remaining>0.01){
+    html+=`<div style="font-family:var(--mono);font-size:9px;color:var(--amber);margin-top:8px;">⚠ $${fmt2(remaining)} undeployed — need funds in uncovered weeks</div>`;
+  }
+  html+=`</div></div>`;
+  document.getElementById('allocResult').innerHTML=html;
+}
+
+// ══════════════════════════════════════
+// TRANSACTIONS
+// ══════════════════════════════════════
+let txType='buy',txFilter='30d';
+function setTxType(t){
+  txType=t;
+  ['buy','sell','btc'].forEach(x=>{
+    const b=document.getElementById('tx'+x.charAt(0).toUpperCase()+x.slice(1));
+    if(b)b.classList.remove('active','green','red','blue');
+  });
+  const btn=document.getElementById('tx'+t.charAt(0).toUpperCase()+t.slice(1));
+  if(btn){btn.classList.add('active');btn.classList.add(t==='buy'?'green':t==='sell'?'red':'blue');}
+  // Update labels
+  const tickerLabel=document.getElementById('txTickerLabel');
+  const sharesLabel=document.getElementById('txSharesLabel');
+  const priceLabel=document.getElementById('txPriceLabel');
+  const btnEl=document.getElementById('txBtn');
+  const sharesGroup=document.getElementById('txSharesGroup');
+  if(t==='btc'){
+    tickerLabel.textContent='AMOUNT ($)';
+    document.getElementById('txTicker').placeholder='125.00';
+    sharesGroup.style.display='none';
+    priceLabel.textContent='BTC PRICE AT TIME ($)';
+    document.getElementById('txPrice').placeholder='84000';
+    btnEl.textContent='LOG BTC PURCHASE →';
+  } else {
+    tickerLabel.textContent='TICKER';
+    document.getElementById('txTicker').placeholder='PDI';
+    sharesGroup.style.display='';
+    sharesLabel.textContent=t==='buy'?'SHARES BOUGHT':'SHARES SOLD';
+    priceLabel.textContent='PRICE/SHARE ($)';
+    document.getElementById('txPrice').placeholder='15.43';
+    btnEl.textContent=t==='buy'?'LOG BUY →':'LOG SELL →';
+  }
+}
+function logTransaction(){
+  const err=document.getElementById('txErr');
+  const date=document.getElementById('txDate').value;
+  const price=parseFloat(document.getElementById('txPrice').value);
+  if(!date){err.textContent='Enter a date.';return;}
+  if(!price||price<=0){err.textContent='Enter a price.';return;}
+
+  if(txType==='btc'){
+    const dollarAmt=parseFloat(document.getElementById('txTicker').value);
+    if(!dollarAmt||dollarAmt<=0){err.textContent='Enter dollar amount.';return;}
+    err.textContent='';
+    S.transactions.unshift({id:uid(),date,type:'btc',ticker:'BTC',total:dollarAmt,btcPrice:price,
+      sats:Math.round((dollarAmt/price)*1e8)});
+    toast('✓ BTC PURCHASE LOGGED');
+  } else {
+    const ticker=document.getElementById('txTicker').value.trim().toUpperCase();
+    const shares=parseFloat(document.getElementById('txShares').value);
+    if(!ticker){err.textContent='Enter a ticker.';return;}
+    if(!shares||shares<=0){err.textContent='Enter shares.';return;}
+    err.textContent='';
+    const total=shares*price;
+    S.transactions.unshift({id:uid(),date,type:txType,ticker,shares,price,total});
+    // Update fund registry
+    const fund=S.funds.find(f=>f.ticker===ticker);
+    if(fund){
+      if(txType==='buy'){
+        const oldTotal=(fund.avgCost||fund.price||price)*(fund.shares||0);
+        const newShares=(fund.shares||0)+shares;
+        fund.avgCost=(oldTotal+(shares*price))/newShares;
+        fund.shares=newShares;
+        fund.price=price;
+      } else {
+        fund.shares=Math.max(0,(fund.shares||0)-shares);
+      }
+    }
+    toast(txType==='buy'?'✓ BUY LOGGED':'✓ SELL LOGGED');
+  }
+  document.getElementById('txTicker').value='';
+  document.getElementById('txShares').value='';
+  document.getElementById('txPrice').value='';
+  document.getElementById('txDate').value=new Date().toISOString().slice(0,10);
+  save();renderTxHistory();renderFunds();
+}
+function removeTx(id){
+  if(!confirm('Delete this transaction?'))return;
+  S.transactions=S.transactions.filter(t=>t.id!==id);
+  save();renderTxHistory();
+}
+function setTxFilter(f,e){
+  txFilter=f;
+  document.querySelectorAll('#txFilterBar .fbtn').forEach(b=>b.classList.remove('active'));
+  if(e&&e.target)e.target.classList.add('active');
+  const labels={'30d':'LAST 30 DAYS','60d':'LAST 60 DAYS','90d':'LAST 90 DAYS','all':'ALL TIME'};
+  const qm=f.match(/^Q(\d)(\d{2})$/);
+  document.getElementById('txFilterLabel').textContent=qm?`Q${qm[1]} 20${qm[2]}`:(labels[f]||f);
+  renderTxHistory();
+}
+function renderTxHistory(){
+  const filtered=filterByPeriod(S.transactions,txFilter);
+  const el=document.getElementById('txHistory');
+  if(!filtered.length){el.innerHTML='<div class="empty">No transactions in this period.</div>';return;}
+  el.innerHTML=filtered.map(t=>{
+    const isBuy=t.type==='buy',isBtc=t.type==='btc',isSell=t.type==='sell';
+    const color=isBtc?'var(--btc)':isBuy?'var(--green)':'var(--red)';
+    const label=isBtc?'BTC':isBuy?'BUY':'SELL';
+    return `<div class="log-row">
+      <div>
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:2px;">
+          <span style="font-family:var(--mono);font-size:13px;font-weight:500;color:${color}">${isBtc?'BTC':t.ticker}</span>
+          <span class="chip" style="background:${color}18;color:${color}">${label}</span>
+        </div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--muted);">${t.date}</div>
+        ${isBtc&&t.sats?`<div style="font-family:var(--mono);font-size:9px;color:var(--btc2);">${fmtInt(t.sats)} sats @ $${fmtInt(t.btcPrice)}</div>`:''}
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="text-align:right;">
+          ${!isBtc?`<div style="font-family:var(--mono);font-size:11px;">${t.shares} sh @ $${fmt2(t.price)}</div>`:''}
+          <div style="font-family:var(--mono);font-size:13px;font-weight:500;color:${color};">${isBtc?'$'+fmt2(t.total):'$'+fmt2(t.total)}</div>
+        </div>
+        <button class="rm" onclick="removeTx('${t.id}')">×</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════
+// DATA TAB
+// ══════════════════════════════════════
+function saveSetting(key,val){S[key]=parseFloat(val)||0;save();}
+function renderDataTab(){
+  document.getElementById('setApiKey').value=S.fmpApiKey||'';
+  document.getElementById('setBaseline').value=S.uhylBaseline||'';
+  const sz=JSON.stringify(S).length;
+  document.getElementById('dataSummary').innerHTML=
+    `FI funds: ${S.funds.filter(f=>f.sleeve==='FI').length}<br>
+     UHYL funds: ${S.funds.filter(f=>f.sleeve==='UHYL').length}<br>
+     Distributions logged: ${S.distLog.length}<br>
+     Transactions logged: ${S.transactions.length}<br>
+     Storage: ~${(sz/1024).toFixed(1)} KB`;
+}
+function exportJSON(){
+  const b=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);
+  a.download='p1-dashboard-'+new Date().toISOString().slice(0,10)+'.json';a.click();
+  toast('✓ JSON EXPORTED');
+}
+function exportCSV(){
+  let csv='Date,Ticker,Sleeve,Amount\n';
+  S.distLog.forEach(d=>{csv+=`${d.date},${d.ticker},${d.sleeve},${d.amount}\n`;});
+  csv+='\nDate,Type,Ticker,Shares,Price,Total\n';
+  S.transactions.forEach(t=>{csv+=`${t.date},${t.type},${t.ticker},${t.shares||''},${t.price||''},${t.total}\n`;});
+  const b=new Blob([csv],{type:'text/csv'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);
+  a.download='p1-data-'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+  toast('✓ CSV EXPORTED');
+}
+function importJSON(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const imported=JSON.parse(e.target.result);
+      S={...S,...imported};
+      // Ensure transactions array exists
+      if(!S.transactions)S.transactions=[];
+      save();renderAll();toast('✓ IMPORTED');
+    }catch(err){toast('⚠ IMPORT FAILED');}
+  };reader.readAsText(file);
+}
+function resetAll(){
+  if(!confirm('Reset ALL data? Cannot be undone.'))return;
+  localStorage.removeItem(STORE);
+  S={funds:[],distLog:[],transactions:[],uhylBaseline:10,fmpApiKey:''};
+  renderAll();toast('DATA RESET');
+}
+function renderAll(){
+  renderPriceStrip();renderOverview();renderLog();renderFunds();renderTxHistory();renderDataTab();
+}
+
+// ══════════════════════════════════════
+// INIT
+// ══════════════════════════════════════
+load();
+
+// Pre-populate funds if empty
+if(S.funds.length===0){
+  S.funds=[
+    {ticker:'CSHI',sleeve:'FI',shares:1.011,price:49.76,avgCost:49.76,dist:0.1946,freq:'monthly',payWeek:2,addedDate:'2025-01-01'},
+    {ticker:'IAUI',sleeve:'FI',shares:1.23,price:59.16,avgCost:59.16,dist:0.6129,freq:'monthly',payWeek:3,addedDate:'2025-01-01'},
+    {ticker:'IYRI',sleeve:'FI',shares:1.289,price:50.00,avgCost:50.00,dist:0.4432,freq:'monthly',payWeek:3,addedDate:'2025-01-01'},
+    {ticker:'HIPS',sleeve:'FI',shares:9.199,price:11.95,avgCost:11.95,dist:0.1075,freq:'monthly',payWeek:4,addedDate:'2025-01-01'},
+    {ticker:'PDI',sleeve:'FI',shares:0,price:17.39,avgCost:17.39,dist:0.22,freq:'monthly',payWeek:1,addedDate:'2025-01-01'},
+    {ticker:'STK',sleeve:'FI',shares:2.185,price:null,avgCost:null,dist:0.3367,freq:'monthly',payWeek:3,addedDate:'2025-01-01'},
+    {ticker:'MSTY',sleeve:'UHYL',shares:2,price:null,avgCost:null,dist:0.38,freq:'weekly',payWeek:null,addedDate:'2025-01-01'},
+    {ticker:'WNTR',sleeve:'UHYL',shares:4.882,price:null,avgCost:null,dist:0.52,freq:'weekly',payWeek:null,addedDate:'2025-01-01'},
+    {ticker:'CHPY',sleeve:'UHYL',shares:6.737,price:null,avgCost:null,dist:0.45,freq:'weekly',payWeek:null,addedDate:'2025-01-01'},
+    {ticker:'ULTY',sleeve:'UHYL',shares:4,price:null,avgCost:null,dist:0.42,freq:'weekly',payWeek:null,addedDate:'2025-01-01'},
+    {ticker:'PLTW',sleeve:'UHYL',shares:1.691,price:null,avgCost:null,dist:0.27,freq:'weekly',payWeek:null,addedDate:'2025-01-01'},
+  ];
+  S.uhylBaseline=10;
+  if(!S.transactions)S.transactions=[];
+  save();
+}
+if(!S.transactions)S.transactions=[];
+
+// Set today on date inputs
+const today=new Date().toISOString().slice(0,10);
+['logDate','txDate'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=today;});
+
+// Apply settings
+document.getElementById('setBaseline').value=S.uhylBaseline||'';
+if(S.fmpApiKey){
+  document.getElementById('setApiKey').value=S.fmpApiKey;
+  fetchPrices();
+}
+
+// Init tx type
+setTxType('buy');
+
+renderAll();
+</script>
+</body>
+</html>
